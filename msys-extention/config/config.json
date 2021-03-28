@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "my-company-library-library": {
+      "components": [
+        {
+          "entrypoint": "./lib/libraries/msysSearchLibrary/MsysSearchLibrary.js",
+          "manifest": "./src/libraries/msysSearchLibrary/MsysSearchLibrary.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "MyCompanyLibraryLibraryStrings": "lib/libraries/msysSearchLibrary/loc/{locale}.js"
+  }
+}

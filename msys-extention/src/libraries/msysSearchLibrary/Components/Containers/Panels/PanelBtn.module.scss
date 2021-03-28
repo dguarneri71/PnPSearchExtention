@@ -1,0 +1,42 @@
+.csInfoMCLine {
+  height: 5px;
+}
+
+.csInfoContent {
+  padding   : 5px;
+  /*overflow-y: scroll;*/
+  height    : 450px;
+}
+
+.csInfoContent div {
+  margin-bottom: 0;
+}
+
+.csInfoLabel {
+  font-weight   : 600;
+  font-size     : 14px;
+  color         : rgb(51, 51, 51);
+  box-sizing    : border-box;
+  box-shadow    : none;
+  margin-top    : 0px;
+  margin-right  : 0px;
+  margin-bottom : 0px;
+  margin-left   : 0px;
+  display       : block;
+  padding-top   : 5px;
+  padding-right : 0px;
+  padding-bottom: 5px;
+  padding-left  : 0px;
+  overflow-wrap : break-word;
+}
+
+.csInfoText {
+  display       : inline-block;
+  vertical-align: top;
+  width         : 100%;
+  font-size     : 14px;
+  font-weight   : 400;
+  outline       : 0;
+  padding       : 0 0 5px;
+  border-bottom : 1px solid transparent;
+}

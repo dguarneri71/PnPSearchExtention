@@ -1,0 +1,16 @@
+@import "~office-ui-fabric-react/dist/sass/References.scss";
+
+.componentTitleBorder {
+    padding: 5px 5px;
+    font-weight: 500;
+
+    .componentText {
+        vertical-align: middle;
+    }
+    
+    .componentIcon {
+        vertical-align: middle;
+        font-size: 1.5em;
+        margin-right: 20px;
+    }
+}
