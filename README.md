@@ -20,6 +20,7 @@ Generic components:
 - msys-title-border
 - msys-css-loader
 
+
 **Example**
 ```html
 <msys-border 
@@ -33,14 +34,14 @@ Generic components:
     </template>
 </msys-border>
 ```
-| Property | Description |
-| --------- | ---------- |
-| `data-color` | The name for your component. This name will be used as the custom HTML element name (ex: `<my-custom-component>`).
-| `data-size` | The web component class for that component.
-| `data-hide` | The web component class for that component.
-| `data-class-name` | The web component class for that component.
-| `data-css-url` | The web component class for that component.
-| `template` | `<template id="border-content">`.
+| Property          | Description                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `data-color`      | The name for your component. This name will be used as the custom HTML element name (ex: `<my-custom-component>`). |
+| `data-size`       | The web component class for that component.                                                                        |
+| `data-hide`       | The web component class for that component.                                                                        |
+| `data-class-name` | The web component class for that component.                                                                        |
+| `data-css-url`    | The web component class for that component.                                                                        |
+| `template`        | `<template id="border-content">`.                                                                                  |
 
 <msys-title-border data-color="" data-size="" data-hide="" data-hide-title="" data-icon="" data-title="" data-text-color="" data-class-name="" data-title-class-name="" data-body-class-name="" data-css-url="">{content}</msys-title-border>
 <msys-css-loader data-css-url=""></msys-css-loader>

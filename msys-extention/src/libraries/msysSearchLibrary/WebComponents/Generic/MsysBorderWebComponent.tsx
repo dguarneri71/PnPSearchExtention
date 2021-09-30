@@ -14,8 +14,13 @@ export interface IBorderWebComponentProps {
     contentTemplate: string;
 }
 
-export class BorderWebComponent extends React.Component<IBorderWebComponentProps, null> {
+export class BorderWebComponent extends React.Component<IBorderWebComponentProps, null> {    
     public render() {
+        console.log("BorderWebComponent - SIZE: ", this.props.size);
+        console.log("BorderWebComponent - COLOR: ", this.props.color);
+        console.log("BorderWebComponent - HIDE: ", this.props.hide);
+        console.log("BorderWebComponent - CLASS-NAME: ", this.props.className);
+        console.log("BorderWebComponent - CONTENT-TEMPLATE: ", this.props.contentTemplate);
         return <Border size={this.props.size} color={this.props.color} hide={this.props.hide} className={this.props.className} contentTemplate={this.props.contentTemplate} />;
     }
 }

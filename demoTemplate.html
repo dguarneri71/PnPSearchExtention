@@ -5,9 +5,9 @@
             padding: 5px;
             border-bottom: 1px solid #eaeaea;
             background-color: #fff;
-          }
-        
-          .csInfoHeader span {
+        }
+
+        .csInfoHeader span {
             width: 93%;
             display: inline-block;
             line-height: 23px;
@@ -18,33 +18,34 @@
             text-overflow: ellipsis;
             -ms-flex-positive: 1;
             flex-grow: 1;
-          }
-          
-          .csInfoMCLine {
-        	height: 5px;
-          }
-        
+        }
+
+        .csInfoMCLine {
+            height: 5px;
+        }
+
         .example-themePrimary a {
             color: {
-                {
+                    {
                     @root.theme.palette.themePrimary
                 }
             }
+
             ;
         }
-        
-        {
+
             {
+                {
                 #unless @root.properties.layoutProperties.showItemThumbnail
             }
         }
-        
+
         .template--listItem--result {
-            flex-basis: 100%!important;
+            flex-basis: 100% !important;
         }
-        
-        {
+
             {
+                {
                 /unless
             }
         }
@@ -53,11 +54,15 @@
     <div class="template">
 
         {{#if @root.properties.showSelectedFilters}}
-        <pnp-selectedfilters data-filters="{{JSONstringify filters.selectedFilters 2}}" data-filters-configuration="{{JSONstringify filters.filtersConfiguration 2}}" data-instance-id="{{filters.instanceId}}" data-operator="{{filters.filterOperator}}" data-theme-variant="{{JSONstringify @root.theme}}">
+        <pnp-selectedfilters data-filters="{{JSONstringify filters.selectedFilters 2}}"
+            data-filters-configuration="{{JSONstringify filters.filtersConfiguration 2}}"
+            data-instance-id="{{filters.instanceId}}" data-operator="{{filters.filterOperator}}"
+            data-theme-variant="{{JSONstringify @root.theme}}">
         </pnp-selectedfilters>
         {{/if}} {{#if @root.properties.showResultsCount}}
         <div class="template--resultCount">
-            <label class="ms-fontWeight-semibold">{{getCountMessage @root.data.totalItemsCount @root.inputQueryText}}</label>
+            <label class="ms-fontWeight-semibold">{{getCountMessage @root.data.totalItemsCount
+                @root.inputQueryText}}</label>
         </div>
         {{/if}} {{#if @root.data.promotedResults}}
         <ul class="template--defaultList template--promotedResults">
@@ -78,56 +83,69 @@
         <ul class="template--defaultList">
             {{#each data.items as |item|}}
             <li class="template--listItem" tabindex="0">
-                {{#> resultTypes item=item}}
-                <div class="template--listItem--result">
-                    {{#if @root.properties.layoutProperties.showFileIcon}}
-                    <pnp-iconfile class="template--listItem--icon" data-extension="{{slot item @root.slots.FileType}}" data-is-container="{{slot item @root.slots.IsFolder}}" data-size="32" data-theme-variant="{{JSONstringify @root.theme}}"></pnp-iconfile>
-                    {{/if}}
-                    <div class="template--listItem--contentContainer">
-                        <span class="template--listItem--title example-themePrimary">
-                                            <a href="{{slot item @root.slots.PreviewUrl}}" target="_blank" data-interception="off">{{slot item @root.slots.Title}}</a>
-                                        </span>
-                        <span>
-                                            {{getSummary (slot item @root.slots.Summary)}}
-                                            <span class="template--listItem--author">
-                                                {{#with (split (slot item @root.slots.Author) '|')}}
-                                                    {{[1]}}
-                                                {{/with}}
-                                            </span>
-                        </span>  
-                        
-                        <!-- Esempio di Panel -->
-						<pnp-panel   
-							data-is-open="false" 
-							data-is-light-dismiss="true"
-							data-is-blocking="true"
-							data-size="3"
-							data-panel-header-text="{{Filename}}"
-							data-content-template="ciao">
+                <msys-border data-color="#FF0000" data-size="1" data-hide="false" data-class-name="demo"
+                    data-css-url="">
+                    <template id="border-content">
+                        {{#> resultTypes item=item}}
+                        <div class="template--listItem--result">
+                            {{#if @root.properties.layoutProperties.showFileIcon}}
+                            <pnp-iconfile class="template--listItem--icon"
+                                data-extension="{{slot item @root.slots.FileType}}"
+                                data-is-container="{{slot item @root.slots.IsFolder}}" data-size="32"
+                                data-theme-variant="{{JSONstringify @root.theme}}"></pnp-iconfile>
+                            {{/if}}
 
-							<template id="panel-open">
-								<!-- All the content here will be wrapped with an onclick event opening/hiding the panel -->
-								<pnp-icon data-name="Info" aria-hidden="true"></pnp-icon>
-							</template>
+                            <div class="template--listItem--contentContainer">
+                                <span class="template--listItem--title example-themePrimary">
+                                    <a href="{{slot item @root.slots.PreviewUrl}}" target="_blank"
+                                        data-interception="off">{{slot item @root.slots.Title}}</a>
+                                </span>
+                                <span>
+                                    {{getSummary (slot item @root.slots.Summary)}}
+                                    <span class="template--listItem--author">
+                                        {{#with (split (slot item @root.slots.Author) '|')}}
+                                        {{[1]}}
+                                        {{/with}}
+                                    </span>
+                                </span>
 
-							<template id="panel-content">
-								<!-- Panel content goes here -->
-								<div>TEST</div>
-							</template>
-						</pnp-panel>
-						
-						<span>{{getDate (slot item @root.slots.Date) "LL"}}</span>
-										
-                        <div class="template--listItem--tags example-themePrimary">
-                            <dg-custom-component-ext data-my-object-param="{{JSONstringify item}}"></dg-custom-component>
+                                <span>{{getDate (slot item @root.slots.Date) "LL"}}</span>
+                            </div>
                         </div>
-                    </div>
+                    </template>
+                </msys-border>
+                <!-- Esempio di Panel -->
+                <pnp-panel data-is-open="false" data-is-light-dismiss="true" data-is-blocking="true" data-size="3"
+                    data-panel-header-text="HELLO" data-content-template="ciao">
+
+                    <template id="panel-open">
+                        <!-- All the content here will be wrapped with an onclick event opening/hiding the panel -->
+                        <pnp-icon data-name="Info" aria-hidden="true"></pnp-icon>
+                    </template>
+
+                    <template id="panel-content">
+                        <!-- Panel content goes here -->
+                        <div>
+                            <msys-border data-color="#FF0000" data-size="1" data-hide="false" data-class-name="demo"
+                                data-css-url="">
+                                <template id="border-content">
+                                    CIAO
+                                </template>
+                            </msys-border>
+                        </div>
+                    </template>
+                </pnp-panel>
+                <div class="template--listItem--tags example-themePrimary">
+                    <dg-custom-component data-my-object-param="{{JSONstringify item}}"></dg-custom-component>
                 </div>
                 {{#if @root.properties.layoutProperties.showItemThumbnail}}
                 <div class="template--listItem--thumbnailContainer">
                     <div class="thumbnail--image">
-                        <pnp-filepreview data-preview-url="{{slot item @root.slots.PreviewUrl}}" data-preview-image-url="{{slot item @root.slots.PreviewImageUrl}}" data-theme-variant="{{JSONstringify @root.theme}}">
-                            <img alt='preview-image' width="120" src="{{slot item @root.slots.PreviewImageUrl}}" loading="lazy" onerror="this.onerror=null;this.src='{{@root.utils.defaultImage}}';" />
+                        <pnp-filepreview data-preview-url="{{slot item @root.slots.PreviewUrl}}"
+                            data-preview-image-url="{{slot item @root.slots.PreviewImageUrl}}"
+                            data-theme-variant="{{JSONstringify @root.theme}}">
+                            <img alt='preview-image' width="120" src="{{slot item @root.slots.PreviewImageUrl}}"
+                                loading="lazy" onerror="this.onerror=null;this.src='{{@root.utils.defaultImage}}';" />
                         </pnp-filepreview>
                         <div class="thumbnail--hover">
                             <div>
@@ -142,8 +160,14 @@
         </ul>
 
         {{#if @root.properties.paging.showPaging}}
-        <pnp-pagination data-total-items="{{@root.data.totalItemsCount}}" data-hide-first-last-pages="{{@root.properties.paging.hideFirstLastPages}}" data-hide-disabled="{{@root.properties.paging.hideDisabled}}" data-hide-navigation="{{@root.properties.paging.hideNavigation}}"
-            data-range="{{@root.properties.paging.pagingRange}}" data-items-count-per-page="{{@root.properties.paging.itemsCountPerPage}}" data-current-page-number="{{@root.paging.currentPageNumber}}" data-page-links="{{JSONstringify @root.data.paging.links}}"
+        <pnp-pagination data-total-items="{{@root.data.totalItemsCount}}"
+            data-hide-first-last-pages="{{@root.properties.paging.hideFirstLastPages}}"
+            data-hide-disabled="{{@root.properties.paging.hideDisabled}}"
+            data-hide-navigation="{{@root.properties.paging.hideNavigation}}"
+            data-range="{{@root.properties.paging.pagingRange}}"
+            data-items-count-per-page="{{@root.properties.paging.itemsCountPerPage}}"
+            data-current-page-number="{{@root.paging.currentPageNumber}}"
+            data-page-links="{{JSONstringify @root.data.paging.links}}"
             data-theme-variant="{{JSONstringify @root.theme}}">
         </pnp-pagination>
         {{/if}}
