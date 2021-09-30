@@ -12,10 +12,11 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 - Install and configure the [PnP Modern Search - Extensibility samples](https://microsoft-search.github.io/pnp-modern-search/installation/) in your SharePoint Online environment.
 
 ## Web Components
-Demo components:
+**Demo components:**
 - dg-custom-component
 - dg-demo-component
-Generic components:
+
+**Generic components:**
 - msys-border
 - msys-title-border
 - msys-css-loader
