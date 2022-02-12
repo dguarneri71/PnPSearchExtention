@@ -3,16 +3,7 @@ import { BaseWebComponent } from '@pnp/modern-search-extensibility';
 import * as ReactDOM from 'react-dom';
 import { Border } from '../../Components/Graphics';
 import { SPComponentLoader } from '@microsoft/sp-loader';
-
-export interface IBorderWebComponentProps {
-    color?: string;
-    size?: number;
-    hide?: boolean;
-    className?: string;
-    //cssUrl?: string;   
-
-    contentTemplate: string;
-}
+import { IBorderWebComponentProps } from './IBorderWebComponentProps';
 
 export class BorderWebComponent extends React.Component<IBorderWebComponentProps, null> {    
     public render() {
@@ -21,13 +12,18 @@ export class BorderWebComponent extends React.Component<IBorderWebComponentProps
         console.log("BorderWebComponent - HIDE: ", this.props.hide);
         console.log("BorderWebComponent - CLASS-NAME: ", this.props.className);
         console.log("BorderWebComponent - CONTENT-TEMPLATE: ", this.props.contentTemplate);
+
         return <Border size={this.props.size} color={this.props.color} hide={this.props.hide} className={this.props.className} contentTemplate={this.props.contentTemplate} />;
     }
 }
 
 /**
  * Guardare metodo getCustomWebComponents di MsysSearchLibrary
- * <msys-border data-color="" data-size="" data-hide="" data-class-name="" data-css-url=""></msys-border>
+ * <msys-border data-color="" data-size="" data-hide="" data-class-name="" data-css-url="">
+ *   <template id="border-content">
+ *       {content}
+ *   </template>
+ * </msys-border>
  */
 export class MsysBorderWebComponent extends BaseWebComponent {
 

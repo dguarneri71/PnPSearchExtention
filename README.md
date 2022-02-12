@@ -56,29 +56,33 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
     data-hide-title="" 
     data-icon="" 
     data-title="" 
+    data-title-bkg-color=""
     data-text-color="" 
     data-class-name="" 
     data-title-class-name="" 
     data-body-class-name="" 
     data-css-url="">
+    <template id="border-content">
         {content}
+    </template>
 </msys-title-border>
 ```  
 
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `data-color`      | The name for your component. This name will be used as the custom HTML element name (ex: `<my-custom-component>`). |
-| `data-size`       | The web component class for that component.                                                                        |
-| `data-hide`       | The web component class for that component.                                                                        |
-| `data-hide-title` | The web component class for that component.                                                                        |
-| `data-icon`       | The web component class for that component.                                                                        |
-| `data-title`      | The web component class for that component.                                                                        |
-| `data-text-color` | The web component class for that component.                                                                        |
-| `data-class-name` | The web component class for that component.                                                                        |
-| `data-title-class-name` | The web component class for that component.                                                                        |
-| `data-body-class-name` | The web component class for that component.                                                                        |
-| `data-css-url`    | The web component class for that component.                                                                        |
-| `template`        | `<template id="border-content">`.                                                                                  |
+| `data-color`      | string - codice colore. |
+| `data-size`       | string - number of px.                                                                        |
+| `data-hide`       | boolean - true | false.                                                                        |
+| `data-hide-title` | boolean - true | false.                                                                        |
+| `data-icon`       | string - fabric ui icon name.                                                                        |
+| `data-title`      | string.                                                                        |
+| `data-title-bkg-color`      | string - codice colore.                                                                        |
+| `data-text-color` | string - codice colore.                                                                        |
+| `data-class-name` | string.                                                                        |
+| `data-title-class-name` | string.                                                                        |
+| `data-body-class-name` | string.                                                                        |
+| `data-css-url`    | string.                                                                        |
+| `template`        | `<template id="border-content"></template>`.                                                                                  |
 
 ```html
 <msys-css-loader data-css-url=""></msys-css-loader>

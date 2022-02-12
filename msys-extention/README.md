@@ -8,4 +8,4 @@ A complete step-by-step tutorial is available [here](...)
 
 ## Build
 
-gulp clean; gulp bundle --ship; gulp package-solution --ship
+gulp clean; gulp bundle --ship; gulp package-solution --ship  

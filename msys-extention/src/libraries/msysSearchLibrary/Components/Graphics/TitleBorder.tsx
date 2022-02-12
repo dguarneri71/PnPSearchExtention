@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { Border } from '.';
 import { ITitleBorderProps } from "./ITitleBorderProps";
 import * as DOMPurify from 'dompurify';
+import { DomPurifyHelper } from '../../Helpers/DomPurifyHelper ';
 
 let borderClass = mergeStyles({
     marginTop: 10
@@ -16,6 +17,23 @@ let bodyClass = mergeStyles({
 });
 
 export class TitleBorder extends React.Component<ITitleBorderProps, {}> {
+    private _domPurify: any;
+
+    public constructor(props: ITitleBorderProps) {
+        super(props);
+
+        this._domPurify = DOMPurify;
+
+        this._domPurify.setConfig({
+            WHOLE_DOCUMENT: true
+        });
+
+        this._domPurify.addHook('uponSanitizeElement', DomPurifyHelper.allowCustomComponentsHook); //consente di inserire altri web component nel template
+        this._domPurify.addHook('uponSanitizeAttribute', DomPurifyHelper.allowCustomAttributesHook); //consente di gestire attributi cutom nei web component
+
+        console.log("Border - _domPurify: ", this._domPurify);
+    }
+
     //Esempio di rendering con elementi vuoti <> usati al posto di React.Fragment
     public render(): React.ReactElement<ITitleBorderProps> {
         let textColor: string = this.props.textColor ? this.props.textColor : "#000";
@@ -51,13 +69,13 @@ export class TitleBorder extends React.Component<ITitleBorderProps, {}> {
             extraClasses = this.props.titleClassName;
         }
 
-        let content: JSX.Element = <div className={container_class}>
+        let content: JSX.Element = <div className={`${styles.componentContainer} ${container_class}`}>
             {!this.props.hideTitle &&
                 <div className={`${styles.componentTitleBorder} ${extraClasses}`} style={divStyle}>
                     {icon}<span className={styles.componentText}>{this.props.title}</span>
                 </div>
             }
-            <div className={bodyClass} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(this.props.contentTemplate) }}></div>
+            <div className={bodyClass} dangerouslySetInnerHTML={{ __html: this._domPurify.sanitize(this.props.contentTemplate) }}></div>
         </div>;
 
         let contentText = renderToStaticMarkup(content);

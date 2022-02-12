@@ -3,20 +3,16 @@ import { BaseWebComponent } from '@pnp/modern-search-extensibility';
 import * as ReactDOM from 'react-dom';
 import { TitleBorder } from '../../Components/Graphics';
 import { SPComponentLoader } from '@microsoft/sp-loader';
-import { IBorderWebComponentProps } from './MsysBorderWebComponent';
-
-export interface ITitleBorderWebComponentProps extends IBorderWebComponentProps {
-    title?: string;
-    icon?: string;
-    hideTitle?: boolean;
-    titleClassName?: string;
-    bodyClassName?: string;
-    textColor?: string;    
-    titleBkgColor?: string;
-}
+import { ITitleBorderWebComponentProps } from './ITitleBorderWebComponentProps';
 
 export class TitleBorderWebComponent extends React.Component<ITitleBorderWebComponentProps, null> {
     public render() {
+        console.log("TitleBorderWebComponent - SIZE: ", this.props.size);
+        console.log("TitleBorderWebComponent - COLOR: ", this.props.color);
+        console.log("TitleBorderWebComponent - HIDE: ", this.props.hide);
+        console.log("TitleBorderWebComponent - CLASS-NAME: ", this.props.className);
+        console.log("TitleBorderWebComponent - CONTENT-TEMPLATE: ", this.props.contentTemplate);
+
         return <TitleBorder
             size={this.props.size}
             color={this.props.color}
@@ -35,7 +31,11 @@ export class TitleBorderWebComponent extends React.Component<ITitleBorderWebComp
 
 /**
  * Guardare metodo getCustomWebComponents di MsysSearchLibrary
- * <msys-title-border data-color="" data-title-bkg-color="" data-text-color="" data-size="" data-hide="" data-hide-title="" data-icon="" data-title=""  data-class-name="" data-title-class-name="" data-body-class-name="" data-css-url=""></msys-title-border>
+ * <msys-title-border data-color="" data-title-bkg-color="" data-text-color="" data-size="" data-hide="" data-hide-title="" data-icon="" data-title=""  data-class-name="" data-title-class-name="" data-body-class-name="" data-css-url="">
+ *  <template id="border-content">
+ *       {content}
+ *   </template>
+ * </msys-title-border>
  */
 export class MsysTitleBorderWebComponent extends BaseWebComponent {
 
