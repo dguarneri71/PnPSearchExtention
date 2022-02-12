@@ -97,19 +97,41 @@ Heandlebars Helpers:
 
 ### cleanText
 
-{{cleanText 'value'}}, value is a string
+Value is a string
+
+```text
+{{cleanText 'value'}}
+```  
 
 ### getUrl
 
-({{getUrl item}}), mandatory properties: ServerRedirectedURL and Path
+Mandatory properties: ServerRedirectedURL and Path  
+
+Usage:  
+
+```html
+<a href="{{getUrl item}}">
+```  
 
 ### getLocateUrl
 
-({{getLocateUrl item}}), mandatory properties: ParentLink, SPWebUrl and ListItemID
+Mandatory properties: ParentLink, SPWebUrl and ListItemID  
+
+Usage:  
+
+```html
+<a href="{{getLocateUrl item}}">
+```  
 
 ### getDispUrl
 
-({{getDispUrl item}}), mandatory properties: ParentLink, SPWebUrl and ListItemID
+Mandatory properties: ParentLink, SPWebUrl and ListItemID  
+
+Usage:  
+
+```html
+<a href="{{getDispUrl item}}">
+```  
 
 ## Disclaimer
 
