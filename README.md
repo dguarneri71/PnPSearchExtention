@@ -48,7 +48,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
 | `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |
 
-### Examples
+### Examples Border
 
 ```html
 <msys-border 
@@ -64,7 +64,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 </msys-border>
 ```
 
-![Esempio border](/assets/images/Border.png "Esempio border")
+![Esempio border](./assets/images/Border.png "Esempio border")
 
 ```html
 <msys-title-border 
@@ -102,7 +102,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
 | `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |  
 
-### Examples
+### Examples TitleBorder
 
 ```html
 <style>
@@ -144,7 +144,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 </msys-title-border>
 ```
 
-![Esempio 1](/assets/images/TitleBorder1.png "Esempio 1")
+![Esempio 1](./assets/images/TitleBorder1.png "Esempio 1")
 
 ```html
 <style>
@@ -175,7 +175,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 </msys-title-border>
 ```
 
-![Esempio 2](/assets/images/TitleBorder2.png "Esempio 2")
+![Esempio 2](./assets/images/TitleBorder2.png "Esempio 2")
 
 ```html
 <msys-css-loader data-css-url=""></msys-css-loader>
