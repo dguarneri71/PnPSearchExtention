@@ -20,11 +20,13 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 **Generic components:**  
 
-- msys-border
-- msys-title-border
-- msys-css-loader
+- [msys-border](#border-component)
+- [msys-title-border](#title-border-componet)
+- [msys-css-loader](#css-loader)
 
-## Components descitption
+## Components description
+
+### Border Component
 
 ```html
 <msys-border 
@@ -48,7 +50,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
 | `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |
 
-### Examples Border
+#### Examples Border
 
 ```html
 <msys-border 
@@ -65,6 +67,8 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 ```
 
 ![Esempio border](./assets/images/Border.png "Esempio border")
+
+### Title Border Componet
 
 ```html
 <msys-title-border 
@@ -102,7 +106,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
 | `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |  
 
-### Examples TitleBorder
+#### Examples Title Border
 
 ```html
 <style>
@@ -177,6 +181,8 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 ![Esempio 2](./assets/images/TitleBorder2.png "Esempio 2")
 
+### Css Loader
+
 ```html
 <msys-css-loader data-css-url=""></msys-css-loader>
 ```  
@@ -185,7 +191,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `data-css-url`    | The web component class for that component.                                                                        |
 
-Heandlebars Helpers:  
+## Heandlebars Helpers  
 
 - cleanText
 - getUrl
