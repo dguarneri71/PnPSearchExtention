@@ -8,15 +8,9 @@ import { ITitleBorderProps } from "./ITitleBorderProps";
 import * as DOMPurify from 'dompurify';
 import { DomPurifyHelper } from '../../Helpers/DomPurifyHelper ';
 
-let borderClass = mergeStyles({
-    marginTop: 10
-});
-
-let bodyClass = mergeStyles({
-    padding: 10
-});
-
 export class TitleBorder extends React.Component<ITitleBorderProps, {}> {
+    private titleBorderRef = React.createRef<HTMLDivElement>();
+
     private _domPurify: any;
 
     public constructor(props: ITitleBorderProps) {
@@ -36,10 +30,18 @@ export class TitleBorder extends React.Component<ITitleBorderProps, {}> {
 
     //Esempio di rendering con elementi vuoti <> usati al posto di React.Fragment
     public render(): React.ReactElement<ITitleBorderProps> {
+        /* let borderClass = mergeStyles({
+            marginTop: 10
+        }); */
+        
+        let bodyClass = mergeStyles({
+            padding: 10
+        });
+
         let textColor: string = this.props.textColor ? this.props.textColor : "#000";
 
         //Se non ho il bordo la classe del bordo l'ha do al contenitore interno
-        let container_class: string = this.props.hide ? borderClass : "";
+        //let container_class: string = this.props.hide ? borderClass : "";
 
         console.log("Props:", this.props);
         console.log("Title Background Color:", this.props.titleBkgColor);
@@ -55,8 +57,12 @@ export class TitleBorder extends React.Component<ITitleBorderProps, {}> {
             icon = <Icon iconName={this.props.icon} className={styles.componentIcon} />;
         }
 
+        let container_class: string = "";
+        let borderClass: string = "";
+        
         if (this.props.className) {
-            borderClass = this.props.className;
+            container_class = this.props.hide ? this.props.className: "";
+            borderClass = this.props.hide ? "hide-" + this.props.className : this.props.className;            
         }
 
         if (this.props.bodyClassName) {
@@ -69,7 +75,7 @@ export class TitleBorder extends React.Component<ITitleBorderProps, {}> {
             extraClasses = this.props.titleClassName;
         }
 
-        let content: JSX.Element = <div className={`${styles.componentContainer} ${container_class}`}>
+        let content: JSX.Element = <div ref={this.titleBorderRef} className={`${styles.componentContainer} ${container_class}`}>
             {!this.props.hideTitle &&
                 <div className={`${styles.componentTitleBorder} ${extraClasses}`} style={divStyle}>
                     {icon}<span className={styles.componentText}>{this.props.title}</span>

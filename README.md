@@ -24,7 +24,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 - msys-title-border
 - msys-css-loader
 
-## Example
+## Components descitption
 
 ```html
 <msys-border 
@@ -41,12 +41,30 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `data-color`      | The name for your component. This name will be used as the custom HTML element name (ex: `<my-custom-component>`). |
-| `data-size`       | The web component class for that component.                                                                        |
-| `data-hide`       | The web component class for that component.                                                                        |
-| `data-class-name` | The web component class for that component.                                                                        |
-| `data-css-url`    | The web component class for that component.                                                                        |
-| `template`        | `<template id="border-content">`.                                                                                  |
+| `data-color`      | string - codice colore. | Colore del bordo.                                                                        |
+| `data-size`       | number - in pixel. Dimensione in pixel del bordo.                                                                  |
+| `data-hide`       | boolean - true | false. Nasconde il bordo.                                                                         |
+| `data-class-name` | string. Classe assegnata al contenitore principale.                                                                |
+| `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
+| `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |
+
+### Examples
+
+```html
+<msys-border 
+    data-color="red" 
+    data-size="1" 
+    data-hide="false" 
+    >
+    <template id="border-content">
+        <div class="template--resultCount">
+            <msys-download-component data-label="Download All" data-content="{{JSONstringify this 2}}" data-icon="Download"></msys-download-component>
+        </div>
+    </template>
+</msys-border>
+```
+
+![Esempio border](/assets/images/Border.png "Esempio border")
 
 ```html
 <msys-title-border 
@@ -70,19 +88,94 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `data-color`      | string - codice colore. |
-| `data-size`       | string - number of px.                                                                        |
-| `data-hide`       | boolean - true | false.                                                                        |
-| `data-hide-title` | boolean - true | false.                                                                        |
-| `data-icon`       | string - fabric ui icon name.                                                                        |
-| `data-title`      | string.                                                                        |
-| `data-title-bkg-color`      | string - codice colore.                                                                        |
-| `data-text-color` | string - codice colore.                                                                        |
-| `data-class-name` | string.                                                                        |
-| `data-title-class-name` | string.                                                                        |
-| `data-body-class-name` | string.                                                                        |
-| `data-css-url`    | string.                                                                        |
-| `template`        | `<template id="border-content"></template>`.                                                                                  |
+| `data-color`      | string - codice colore. | Colore del bordo.                                                                        |
+| `data-size`       | number - in pixel. Dimensione in pixel del bordo.                                                                  |
+| `data-hide`       | boolean - true | false. Nasconde il bordo.                                                                         |
+| `data-hide-title` | boolean - true | false. Nasconde il titolo.                                                                        |
+| `data-icon`       | string - fabric ui icon name. Icona nel titolo.                                                                    |
+| `data-title`      | string. Il titolo                                                                                                  |
+| `data-title-bkg-color`      | string - codice colore. Sfondo del titolo.                                                               |
+| `data-text-color` | string - codice colore. Colore dei caratteri del titolo.                                                           |
+| `data-class-name` | string. Classe assegnata al contenitore principale.                                                                |
+| `data-title-class-name` | string. Classe assegnata al contenitore del titolo.                                                          |
+| `data-body-class-name` | string. Classe assegnata al contenitore del contenuto.                                                        |
+| `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
+| `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |  
+
+### Examples
+
+```html
+<style>
+    /* Insert your CSS overrides here */
+    .test1 {
+        margin-bottom: 10px;
+        padding: 5px;
+        border: orange solid 1px;
+    }
+
+    .test2 {
+        border: red solid 2px;
+    }
+
+    .test3 {
+        border: blue solid 3px;
+        margin-top: 10px;
+    }
+</style>
+<msys-title-border 
+    data-color="red" 
+    data-size=1 
+    data-hide=true 
+    data-hide-title=false
+    data-icon="Download" 
+    data-title="Prova" 
+    data-text-color="yellow" 
+    data-title-bkg-color="black"
+    data-class-name="test1"
+    data-title-class-name="test2"
+    data-body-class-name="test3"
+    data-css-url=""
+    >
+    <template id="border-content">
+            <div class="template--resultCount">
+                TEST TEST                   
+        </div>
+    </template>
+</msys-title-border>
+```
+
+![Esempio 1](/assets/images/TitleBorder1.png "Esempio 1")
+
+```html
+<style>
+    /* Insert your CSS overrides here */
+    .lele1 {
+        margin-bottom: 10px;
+    }            
+</style>
+<msys-title-border 
+    data-color="red" 
+    data-size=1 
+    data-hide=false 
+    data-hide-title=false
+    data-icon="Page" 
+    data-title="Prova" 
+    data-text-color="orange" 
+    data-title-bkg-color="black"
+    data-class-name="lele1"
+    data-title-class-name="lele2"
+    data-body-class-name="lele3"
+    data-css-url=""
+    >
+    <template id="border-content">
+        <div class="template--resultCount">
+            <msys-invoke-flow-component data-content="{{JSONstringify this 2}}" data-label="Download All with Flow" data-list-settings="Settings" data-settings-key="SPFX_InvokeFlowComponent" data-icon="Page"></msys-invoke-flow-component>
+        </div>
+    </template>
+</msys-title-border>
+```
+
+![Esempio 2](/assets/images/TitleBorder2.png "Esempio 2")
 
 ```html
 <msys-css-loader data-css-url=""></msys-css-loader>
