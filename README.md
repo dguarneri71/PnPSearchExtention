@@ -12,17 +12,20 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 - Install and configure the [PnP Modern Search - Extensibility samples](https://microsoft-search.github.io/pnp-modern-search/installation/) in your SharePoint Online environment.
 
 ## Web Components
-**Demo components:**
+
+**Demo components:**  
+
 - dg-custom-component
 - dg-demo-component
 
-**Generic components:**
+**Generic components:**  
+
 - msys-border
 - msys-title-border
 - msys-css-loader
 
+## Example
 
-**Example**
 ```html
 <msys-border 
     data-color="" 
@@ -34,7 +37,8 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
         {content}
     </template>
 </msys-border>
-```
+```  
+
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `data-color`      | The name for your component. This name will be used as the custom HTML element name (ex: `<my-custom-component>`). |
@@ -44,19 +48,67 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | `data-css-url`    | The web component class for that component.                                                                        |
 | `template`        | `<template id="border-content">`.                                                                                  |
 
-<msys-title-border data-color="" data-size="" data-hide="" data-hide-title="" data-icon="" data-title="" data-text-color="" data-class-name="" data-title-class-name="" data-body-class-name="" data-css-url="">{content}</msys-title-border>
-<msys-css-loader data-css-url=""></msys-css-loader>
+```html
+<msys-title-border 
+    data-color="" 
+    data-size="" 
+    data-hide="" 
+    data-hide-title="" 
+    data-icon="" 
+    data-title="" 
+    data-text-color="" 
+    data-class-name="" 
+    data-title-class-name="" 
+    data-body-class-name="" 
+    data-css-url="">
+        {content}
+</msys-title-border>
+```  
 
-Heandlebars Helpers:
+| Property          | Description                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `data-color`      | The name for your component. This name will be used as the custom HTML element name (ex: `<my-custom-component>`). |
+| `data-size`       | The web component class for that component.                                                                        |
+| `data-hide`       | The web component class for that component.                                                                        |
+| `data-hide-title` | The web component class for that component.                                                                        |
+| `data-icon`       | The web component class for that component.                                                                        |
+| `data-title`      | The web component class for that component.                                                                        |
+| `data-text-color` | The web component class for that component.                                                                        |
+| `data-class-name` | The web component class for that component.                                                                        |
+| `data-title-class-name` | The web component class for that component.                                                                        |
+| `data-body-class-name` | The web component class for that component.                                                                        |
+| `data-css-url`    | The web component class for that component.                                                                        |
+| `template`        | `<template id="border-content">`.                                                                                  |
+
+```html
+<msys-css-loader data-css-url=""></msys-css-loader>
+```  
+
+| Property          | Description                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `data-css-url`    | The web component class for that component.                                                                        |
+
+Heandlebars Helpers:  
+
 - cleanText
-- getUrl 
-- getLocateUrl 
-- getDispUrl 
+- getUrl
+- getLocateUrl
+- getDispUrl
 
 ### cleanText
+
 {{cleanText 'value'}}, value is a string
+
+### getUrl
+
 ({{getUrl item}}), mandatory properties: ServerRedirectedURL and Path
+
+### getLocateUrl
+
 ({{getLocateUrl item}}), mandatory properties: ParentLink, SPWebUrl and ListItemID
+
+### getDispUrl
+
 ({{getDispUrl item}}), mandatory properties: ParentLink, SPWebUrl and ListItemID
 
 ## Disclaimer
