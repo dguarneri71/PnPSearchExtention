@@ -213,7 +213,7 @@ Chiama un flow Power Automate con un HTTP Trigger con i seguenti parametri.
 
 ```json
 {
-    "siteUrl": "<alsolute url>",
+    "siteUrl": "<absolute url>",
     "data": "queryText",
     "userEmail": "userEmail"
 }
