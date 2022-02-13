@@ -1,12 +1,14 @@
 import { IExtensibilityLibrary, IComponentDefinition, ISuggestionProviderDefinition } from "@pnp/modern-search-extensibility";
 import { MyCustomComponentWebComponent } from "./WebComponents/Demo/CustomComponent";
 import { DGDemoComponentWebComponent } from "./WebComponents/Demo/DemoWebComponent";
-import { MsysBorderWebComponent,  MsysTitleBorderWebComponent, MsysCssLoaderWebComponent} from "./WebComponents/Generic";
+import { MsysBorderWebComponent,  MsysTitleBorderWebComponent, MsysCssLoaderWebComponent } from "./WebComponents/Generic";
 import * as Handlebars from 'handlebars';
 import { isEmpty } from "@microsoft/sp-lodash-subset";
+import { DownloadWebComponent, InvokeFlowWebComponent } from "./WebComponents/Interactive";
 
 export class MsysSearchLibrary implements IExtensibilityLibrary {
   //Registro i custom Web Components
+  //TODO fare componente per scaricare risultati come Excel o CSV
   public getCustomWebComponents(): IComponentDefinition<any>[] {
     return [
       {
@@ -28,6 +30,14 @@ export class MsysSearchLibrary implements IExtensibilityLibrary {
       {
         componentName: 'msys-css-loader',
         componentClass: MsysCssLoaderWebComponent
+      },
+      {
+        componentName: 'msys-download-all',
+        componentClass: DownloadWebComponent
+      },
+      {
+        componentName: 'msys-call-flow',
+        componentClass: InvokeFlowWebComponent
       }
     ];
   }

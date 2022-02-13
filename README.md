@@ -14,6 +14,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 ## Web Components
 
 **Demo components:**  
+Usati per sperimentare. Non verranno descritti.
 
 - dg-custom-component
 - dg-demo-component
@@ -23,6 +24,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 - [msys-border](#border-component)
 - [msys-title-border](#title-border-componet)
 - [msys-css-loader](#css-loader)
+- msys-download-all
 
 ## Components description
 
@@ -55,8 +57,8 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 ```html
 <msys-border 
     data-color="red" 
-    data-size="1" 
-    data-hide="false" 
+    data-size=1 
+    data-hide=false 
     >
     <template id="border-content">
         <div class="template--resultCount">
@@ -190,6 +192,44 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `data-css-url`    | The web component class for that component.                                                                        |
+
+### Download File
+
+Permette di fare il download di tutti i file contenuti nei risultati della ricerca.
+
+```html
+<msys-download-all data-label="Download All" data-content="{{JSONstringify this 2}}" data-icon="Download"></msys-download-all>
+```  
+
+| Property          | Description                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `data-content`    | Il contesto della search result webpart.                                                                           |
+| `data-label`      | Il testo vicino al bottone.                                                                                        |
+| `data-icon`       | L'icona del bottone.                                                                                               |
+
+### Invoke Power Automate Flow
+
+Chiama un flow Power Automate con un HTTP Trigger con i seguenti parametri.  
+
+```json
+{
+    "siteUrl": "<alsolute url>",
+    "data": "queryText",
+    "userEmail": "userEmail"
+}
+```
+
+```html
+<msys-call-flow data-content="{{JSONstringify this 2}}" data-label="Download All with Flow" data-list-settings="Settings" data-settings-key="SPFX_InvokeFlowComponent" data-icon="Page"></msys-call-flow>
+```  
+
+| Property                   | Description                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `data-content`             | Il contesto della search result webpart.                                                                           |
+| `data-label`               | Il testo vicino al bottone.                                                                                        |
+| `data-icon`                | L'icona del bottone.                                                                                               |
+| `data-list-settings`       | Il titolo della lista Settings. Deve essere nello stesso sito.                                                     |
+| `data-settings-key`        | La chiave di ricerca dell'item della lista Settings.                                                               |
 
 ## Heandlebars Helpers  
 
