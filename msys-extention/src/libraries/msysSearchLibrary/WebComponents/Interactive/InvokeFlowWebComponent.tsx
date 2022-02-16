@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import styles from './InvokeFlowWebComponent.module.scss';
 import { BaseWebComponent } from '@pnp/modern-search-extensibility';
-import { Text, Callout, DirectionalHint, IconButton, IIconProps, initializeIcons } from 'office-ui-fabric-react';
+import { Text, Callout, DirectionalHint, IconButton, IIconProps, initializeIcons, CommandBarButton } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
 import { stringIsNullOrEmpty } from "@pnp/common";
@@ -37,6 +37,7 @@ const ERROR_INVOKE_FLOW: string = "Action failed, please retry.";
 const ERROR_CONFIGURATION: string = "Please configure web component.";
 const invokeIcon: IIconProps = { iconName: 'Download' };
 const errorIcon: IIconProps = { iconName: 'Warning' };
+const LABEL: string = 'Download All';
 
 export class InvokeFlowComponent extends React.Component<IInvokeFlowComponentProps, IInvokeFlowComponentState> {
     private dataService: IDataService;
@@ -66,8 +67,7 @@ export class InvokeFlowComponent extends React.Component<IInvokeFlowComponentPro
 
     public componentDidMount(): void {
         let configListName: string = this.props.listSettings;
-        if (stringIsNullOrEmpty(configListName) === false && stringIsNullOrEmpty(this.state.flowUrl)) {
-            //let listSettingsUrl: string = this.props.context.web.serverRelativeUrl + this.props.listSettings;      
+        if (stringIsNullOrEmpty(configListName) === false && stringIsNullOrEmpty(this.state.flowUrl)) {     
             this.dataService.getSettingsBySpecificKey(this.props.listSettings, this.props.settingsKey).then(values => {
                 console.log(LOG_SOURCE + " - componentDidMount() - settings: ", values);
                 for (let index = 0; index < values.length; index++) {
@@ -90,7 +90,7 @@ export class InvokeFlowComponent extends React.Component<IInvokeFlowComponentPro
         console.log(LOG_SOURCE + " - Content: ", this.props.content);
         let items: any[] = this.props.content["data"]["items"];
         console.log(LOG_SOURCE + " - Items: ", items);
-        let label: string = this.props.label;
+        let label: string = this.props.label ? this.props.label : LABEL;
         if (this.props.icon) {
             invokeIcon.iconName = this.props.icon;
         }
@@ -100,10 +100,16 @@ export class InvokeFlowComponent extends React.Component<IInvokeFlowComponentPro
         return <>
             <span className={`${classID}`}>
                 {!hasError &&
-                    (this.props.label ?
+                    /* (this.props.label ?
                         (<span>{label} <IconButton iconProps={invokeIcon} title={label} ariaLabel={label} onClick={this.__invoke.bind(this)} /></span>)
                         :
                         (<IconButton iconProps={invokeIcon} title={label} ariaLabel={label} onClick={this.__invoke.bind(this)} />)
+                    ) */
+                    (
+                        this.props.label ?
+                            (<CommandBarButton iconProps={invokeIcon} text={label} ariaLabel={label} onClick={this.__invoke.bind(this)} />)
+                            :
+                            (<IconButton iconProps={invokeIcon} title={label} ariaLabel={label} onClick={this.__invoke.bind(this)} />)
                     )
                 }
                 {hasError &&

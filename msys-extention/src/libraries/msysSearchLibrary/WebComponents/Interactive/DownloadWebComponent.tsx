@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import styles from './DownloadWebComponent.module.scss';
 import { BaseWebComponent } from '@pnp/modern-search-extensibility';
-import { IconButton, IIconProps, initializeIcons } from 'office-ui-fabric-react';
+import { IconButton, IIconProps, initializeIcons, CommandBarButton } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
 import { IDataService } from '../../Classes/Services/IDataService';
@@ -48,16 +48,16 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         console.log(LOG_SOURCE + " - Content: ", this.props.content);
         let items: any[] = this.props.content["data"]["items"];
         console.log(LOG_SOURCE + " - Items: ", items);
-        let label: string = this.props.label;
+        let label: string = this.props.label ? this.props.label : LABEL;
         if (this.props.icon) {
             downloadIcon.iconName = this.props.icon;
         }
         return <>
             {
                 this.props.label ?
-                    (<span>{label} <IconButton iconProps={downloadIcon} title={this.props.label} ariaLabel={this.props.label} onClick={this.__download.bind(this)} /></span>)
+                    (<CommandBarButton iconProps={downloadIcon} text={label} ariaLabel={label} onClick={this.__download.bind(this)} />)
                     :
-                    (<IconButton iconProps={downloadIcon} title={LABEL} ariaLabel={LABEL} onClick={this.__download.bind(this)} />)
+                    (<IconButton iconProps={downloadIcon} title={label} ariaLabel={label} onClick={this.__download.bind(this)} />)
             }
         </>;
     }

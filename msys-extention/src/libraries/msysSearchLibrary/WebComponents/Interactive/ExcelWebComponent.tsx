@@ -10,7 +10,6 @@ import QueryData from '../../Classes/Entities/QueryData';
 import { FieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-controls-react/lib/FieldCollectionData';
 import { Helper } from '../../Helpers/Helper';
 import { FieldCollectionDataValue } from '../../Classes/Entities/FieldCollectionDataValue';
-//import DownloadFile from '../../Classes/Entities/DownloadFile';
 
 export interface IExcelComponentProps {
     content?: {}; //tutto il contenuto della Search Result WP
@@ -72,13 +71,13 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         }
 
         return <>
-            {/* {
+            {
                 this.props.label ?
-                    (<CommandBarButton iconProps={icon} text={label} ariaLabel={label} onClick={this.__download.bind(this)} />)
+                    (<CommandBarButton iconProps={icon} text={label} ariaLabel={label} onClick={this._showPanel.bind(this)} />)
                     :
-                    (<IconButton iconProps={icon} title={label} ariaLabel={label} onClick={this.__download.bind(this)} />)
-            } */}
-            <CommandBarButton iconProps={icon} text={label} ariaLabel={label} onClick={this._showPanel.bind(this)} />
+                    (<IconButton iconProps={icon} title={label} ariaLabel={label} onClick={this._showPanel.bind(this)} />)
+            }
+            {/* <CommandBarButton iconProps={icon} text={label} ariaLabel={label} onClick={this._showPanel.bind(this)} /> */}
 
             <Panel
                 isOpen={this.state.showPanel}
