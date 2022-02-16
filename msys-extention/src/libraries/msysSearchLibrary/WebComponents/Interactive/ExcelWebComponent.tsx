@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BaseWebComponent } from '@pnp/modern-search-extensibility';
-import { IconButton, IIconProps, initializeIcons, CommandBarButton, Panel, PanelType, DefaultButton } from 'office-ui-fabric-react';
+import { IconButton, IIconProps, initializeIcons, CommandBarButton, Panel, PanelType, DefaultButton, PrimaryButton, Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
 import { IDataService } from '../../Classes/Services/IDataService';
@@ -10,6 +10,8 @@ import QueryData from '../../Classes/Entities/QueryData';
 import { FieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-controls-react/lib/FieldCollectionData';
 import { Helper } from '../../Helpers/Helper';
 import { FieldCollectionDataValue } from '../../Classes/Entities/FieldCollectionDataValue';
+import { PnPClientStorage } from "@pnp/core";
+import { stringIsNullOrEmpty } from "@pnp/common";
 
 export interface IExcelComponentProps {
     content?: {}; //tutto il contenuto della Search Result WP
@@ -34,27 +36,35 @@ const icon: IIconProps = { iconName: 'ExcelDocument' };
 const LABEL: string = 'Download Results in Excel';
 const HEARDER_TITLE: string = "Title";
 const HEARDER_DISPLAY_NAME: string = "DisplayName";
+const STORAGE_KEY: string = "ExcelHeaders";
 
 //TODO: aggiungere salvataggio in cookie delle headerLabels
 export class ExcelComponent extends React.Component<IExcelComponentProps, IExcelComponentState> {
     private dataService: IDataService;
+    private storage: PnPClientStorage;
 
     constructor(props: IExcelComponentProps) {
         super(props);
         console.log(LOG_SOURCE + " - props: ", this.props);
         this.dataService = new SPDataService(this.props.context, this.props.httpClient);
+        let _values: any[] = [];
+        this.storage = new PnPClientStorage();
+        _values = this.storage.local.get(STORAGE_KEY);
+        console.log(LOG_SOURCE + " - Storage HeaderLabels: ", _values);
 
-        let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
+        if (_values == null) {
+            let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
+            let properties: string[] = dataSourceProperties["selectedProperties"];
+            _values = properties.map((value, index, array) => {
+                let valueData: FieldCollectionDataValue = new FieldCollectionDataValue();
+                valueData.Title = value;
+                valueData.DisplayName = value;
+                return valueData;
+            });
+            this.storage.local.put(STORAGE_KEY, _values);
+        }
 
-        let properties: string[] = dataSourceProperties["selectedProperties"];
-        let _values: any[] = properties.map((value, index, array) => {
-            let valueData: FieldCollectionDataValue = new FieldCollectionDataValue();
-            valueData.Title = value;
-            valueData.DisplayName = value;
-            return valueData;
-        });
-
-        console.log(LOG_SOURCE + " - headerLabels: ", _values);
+        console.log(LOG_SOURCE + " - HeaderLabels: ", _values);
 
         this.state = {
             isCalloutVisible: false,
@@ -77,9 +87,44 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     :
                     (<IconButton iconProps={icon} title={label} ariaLabel={label} onClick={this._showPanel.bind(this)} />)
             }
-            {/* <CommandBarButton iconProps={icon} text={label} ariaLabel={label} onClick={this._showPanel.bind(this)} /> */}
 
-            <Panel
+            <Dialog
+                hidden={!this.state.showPanel}
+                onDismiss={this._hidePanel}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Download Search Result',
+                    subText: ''
+                  }}
+                  modalProps={{
+                    isBlocking: true,
+                    styles: { main: { maxWidth: 450 } }
+                  }}
+            >
+                <FieldCollectionData
+                    key={"FieldCollectionData"}
+                    label={"Excel Columns"}
+                    manageBtnLabel={"Manage"}
+                    onChanged={this._onChangeFieldCollectionData.bind(this)}
+                    panelHeader={"Define Excel File Columns"}
+                    enableSorting={true}
+                    executeFiltering={(searchFilter: string, item: any) => {
+                        return item[HEARDER_TITLE] === +searchFilter;
+                    }}
+                    itemsPerPage={10}
+                    fields={[
+                        { id: HEARDER_TITLE.valueOf(), title: "Property Name", type: CustomCollectionFieldType.string, required: true },
+                        { id: HEARDER_DISPLAY_NAME.valueOf(), title: "Column Name", type: CustomCollectionFieldType.string, required: true },
+                    ]}
+                    value={this.state.headerLabels}
+                />
+                <DialogFooter>
+                    <PrimaryButton onClick={this.__download.bind(this)} text="Download Excel" />
+                    <DefaultButton onClick={this._hidePanel} text="Cancel" />
+                </DialogFooter>
+            </Dialog>
+
+            {/* <Panel
                 isOpen={this.state.showPanel}
                 onDismiss={this._hidePanel}
                 type={PanelType.largeFixed}
@@ -104,7 +149,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     ]}
                     value={this.state.headerLabels}
                 />
-            </Panel>
+            </Panel> */}
         </>;
     }
 
@@ -116,10 +161,11 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         this.setState({ showPanel: false });
     }
 
-    private _onChangeFieldCollectionData(value: any[]): void {
-        console.log(LOG_SOURCE + " - FieldCollectionData: ", value);
+    private _onChangeFieldCollectionData(values: any[]): void {
+        console.log(LOG_SOURCE + " - FieldCollectionData: ", values);
+        this.storage.local.put(STORAGE_KEY, values);
         this.setState({
-            headerLabels: value
+            headerLabels: values
         });
     }
 

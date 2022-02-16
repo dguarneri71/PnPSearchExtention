@@ -20,7 +20,7 @@ export default class SPDataService implements IDataService {
 
     constructor(context: PageContext, httpClient: HttpClient) {
         console.log(LOG_SOURCE + " - constructor - absoluteUrl: ", context.web.absoluteUrl);
-        this._httpClient = httpClient;
+        this._httpClient = httpClient;                
         sp.setup({
             pageContext: context
         });
@@ -143,6 +143,7 @@ export default class SPDataService implements IDataService {
         });
     }
 
+    /******** Private Methods  ********/
     private getSettings(listTitle: string, key: string): Promise<any[]> {
         let _filter = "Key eq '" + key + "'";
         console.log(LOG_SOURCE + " - getSettings() - filter: ", _filter);
