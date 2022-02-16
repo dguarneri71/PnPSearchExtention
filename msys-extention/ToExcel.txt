@@ -1,0 +1,61 @@
+//Codice che genera 2 file un xlsx e un csv
+
+ 
+
+["xlsx", "csv"].forEach(ext => {
+
+var ws = { "!ref": "A1", A1: { t:"d", z:"m/d/yy", v: '1/27/2022 12:00:00 AM' } };
+
+var wb = XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+XLSX.writeFile(wb, `issue2515.${ext}`);
+
+});
+
+ 
+
+ 
+
+//Il codice seguente restituisce solo i valori presenti nell'header
+
+ 
+
+const headers = ["A"];
+
+var aoo = datasource.map(function(obj) {
+
+  return headers.reduce(function(acc, key) {
+
+    acc[key] = obj[key];
+
+    return acc;
+
+  }, ({}));
+
+});
+
+const worksheet = XLSX.utils.json_to_sheet(aoo, {
+
+  header: headers
+
+});
+
+ 
+
+///Per rinominare gli elementi dell'header
+
+Fixing headers
+
+ 
+
+By default, json_to_sheet creates a worksheet with a header row. In this case, the headers come from the JS object keys: "name" and "birthday".
+
+ 
+
+The headers are in cells A1 and B1. XLSX.utils.sheet_add_aoa can write text values to the existing worksheet starting at cell A1:
+
+ 
+
+XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Birthday"]], { origin: "A1" });

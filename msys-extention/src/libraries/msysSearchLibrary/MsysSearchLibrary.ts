@@ -4,7 +4,7 @@ import { DGDemoComponentWebComponent } from "./WebComponents/Demo/DemoWebCompone
 import { MsysBorderWebComponent,  MsysTitleBorderWebComponent, MsysCssLoaderWebComponent } from "./WebComponents/Generic";
 import * as Handlebars from 'handlebars';
 import { isEmpty } from "@microsoft/sp-lodash-subset";
-import { DownloadWebComponent, InvokeFlowWebComponent } from "./WebComponents/Interactive";
+import { DownloadWebComponent, ExcelWebComponent, InvokeFlowWebComponent } from "./WebComponents/Interactive";
 
 export class MsysSearchLibrary implements IExtensibilityLibrary {
   //Registro i custom Web Components
@@ -38,6 +38,10 @@ export class MsysSearchLibrary implements IExtensibilityLibrary {
       {
         componentName: 'msys-call-flow',
         componentClass: InvokeFlowWebComponent
+      },
+      {
+        componentName: 'msys-results-excel',
+        componentClass: ExcelWebComponent
       }
     ];
   }

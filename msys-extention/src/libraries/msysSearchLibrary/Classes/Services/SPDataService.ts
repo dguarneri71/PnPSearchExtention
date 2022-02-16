@@ -17,18 +17,6 @@ const LOG_SOURCE: string = 'SPDataService';
 
 export default class SPDataService implements IDataService {
     private _httpClient: HttpClient;
-    //private _context: PageContext;
-
-    /* constructor(absoluteUrl: string) {
-        console.log(LOG_SOURCE + " - constructor - absoluteUrl: ", absoluteUrl);
-        sp.setup({
-            pageContext: {
-                web: {
-                    absoluteUrl: absoluteUrl
-                }
-            }
-        });
-    } */
 
     constructor(context: PageContext, httpClient: HttpClient) {
         console.log(LOG_SOURCE + " - constructor - absoluteUrl: ", context.web.absoluteUrl);
@@ -38,17 +26,23 @@ export default class SPDataService implements IDataService {
         });
     }
 
+    /**
+     * Esegue una query al motore di ricerca di SharePoint
+     * @param query 
+     * @param count 
+     * @returns 
+     */
     public async getSearchResult(query: QueryData, count: number): Promise<ISearchResult[]> {
         console.log(LOG_SOURCE + " - getSearchResult(): ", query, count);
 
         const searchResults: SearchResults = await sp.search(<ISearchQuery>{
             Querytext: query.queryText,
             RowLimit: count,
-            SelectProperties: ["Filename", "FileType", "FileExtension", "Path"],
+            SelectProperties: query.SelectProperties,
             EnableQueryRules: query.enableQueryRules,
             SourceId: query.resultSourceId,
             QueryTemplate: query.queryTemplate,
-            TrimDuplicates: false
+            TrimDuplicates: false,
         });
 
         console.log(LOG_SOURCE + " - getSearchResult() - ElapsedTime: ", searchResults.ElapsedTime);
@@ -60,6 +54,13 @@ export default class SPDataService implements IDataService {
         });
     }
 
+    /**
+     * Invoca un flow Power Automate, che ha un HTTPTrigger
+     * @param flowUrl La URL del flow Power Automate
+     * @param parameters I parametri del flow
+     * @param getData Flag per indicare se c'è una risposta da parte del flow da memorizzare
+     * @returns 
+     */
     public invokePowerAutomateFlowExtended(flowUrl: string, parameters: any, getData: boolean): Promise<InvokeFlowResult> {
         const postURL: string = flowUrl;
 
@@ -120,6 +121,12 @@ export default class SPDataService implements IDataService {
         });
     }
 
+    /**
+     * Recupera tutti i record nella lista di configurazione con la chiave passata
+     * @param listTitle Titolo della lista di configurazione
+     * @param key Chiave di ricerca delle configurazioni
+     * @returns 
+     */
     public getSettingsBySpecificKey(listTitle: string, key: string): Promise<SettingItem[]> {
         return new Promise<any[]>((res, reject) => {
             this.getSettings(listTitle, key).then(items => {

@@ -28,6 +28,7 @@ initializeIcons();
 
 const LOG_SOURCE: string = 'DownloadComponent';
 const downloadIcon: IIconProps = { iconName: 'Download' };
+const LABEL: string = 'Download All';
 
 export class DownloadComponent extends React.Component<IDownloadComponentProps, IDownloadComponentState> {
     private dataService: IDataService;
@@ -54,9 +55,9 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         return <>
             {
                 this.props.label ?
-                    (<span>{label} <IconButton iconProps={downloadIcon} title="Download All" ariaLabel="Download All" onClick={this.__download.bind(this)} /></span>)
+                    (<span>{label} <IconButton iconProps={downloadIcon} title={this.props.label} ariaLabel={this.props.label} onClick={this.__download.bind(this)} /></span>)
                     :
-                    (<IconButton iconProps={downloadIcon} title="Download All" ariaLabel="Download All" onClick={this.__download.bind(this)} />)
+                    (<IconButton iconProps={downloadIcon} title={LABEL} ariaLabel={LABEL} onClick={this.__download.bind(this)} />)
             }
         </>;
     }
@@ -73,7 +74,7 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
         let queryTemplate: string = dataSourceProperties["queryTemplate"];
         let resultSourceId: string = dataSourceProperties["resultSourceId"];
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId);
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path"]);
         console.log(LOG_SOURCE + " - Query: ", query);
 
         this.dataService.getSearchResult(query, count).then(results => {
