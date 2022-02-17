@@ -11,6 +11,16 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 - Install and configure the [PnP Modern Search - Extensibility samples](https://microsoft-search.github.io/pnp-modern-search/installation/) in your SharePoint Online environment. (GUID: cd44d351-d45a-4c20-8eed-8d75cae02282)
 
+<details>
+  <summary>Click to expand!</summary>
+  
+  ## Heading
+  1. A numbered
+  2. list
+     * With some
+     * Sub bullets
+</details>
+
 ## Web Components
 
 **Demo components:**  
