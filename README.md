@@ -11,16 +11,6 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 - Install and configure the [PnP Modern Search - Extensibility samples](https://microsoft-search.github.io/pnp-modern-search/installation/) in your SharePoint Online environment. (GUID: cd44d351-d45a-4c20-8eed-8d75cae02282)
 
-<details>
-  <summary>Click to expand!</summary>
-  
-  ## Heading
-  1. A numbered
-  2. list
-     * With some
-     * Sub bullets
-</details>
-
 ## Web Components
 
 **Demo components:**  
@@ -41,6 +31,11 @@ Usati per sperimentare. Non verranno descritti.
 ## Components description
 
 ### Border Component
+
+Questo componente permette di definire un area con un bordo in cui inserire altri componenti. 
+
+<details>
+  <summary>Details</summary>
 
 ```html
 <msys-border 
@@ -81,9 +76,16 @@ Usati per sperimentare. Non verranno descritti.
 ```
 
 ![Esempio border](./assets/images/Border.png "Esempio border")
+  
+</details>
 
 ### Title Border Componet
 
+Questo componente permette di definire un area con un bordo e un titolo in cui inserire altri componenti. 
+
+<details>
+  <summary>Details</summary>
+  
 ```html
 <msys-title-border 
     data-color="" 
@@ -195,20 +197,32 @@ Usati per sperimentare. Non verranno descritti.
 
 ![Esempio 2](./assets/images/TitleBorder2.png "Esempio 2")
 
+</details>
+  
 ### Css Loader
 
+Questo componente permette di inserire un riferimento a un file css esterno. 
+
+<details>
+  <summary>Details</summary>
+  
 ```html
 <msys-css-loader data-css-url=""></msys-css-loader>
 ```  
 
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `data-css-url`    | The web component class for that component.                                                                        |
+| `data-css-url`    | La url del file stylesheet.                                                                                        |
+
+</details>
 
 ### Download Files
 
-Permette di fare il download di tutti i file contenuti nei risultati della ricerca.
+Questo componente permette di fare il download di tutti i file contenuti nei risultati della ricerca. Scarica un file alla volta. 
 
+<details>
+  <summary>Details</summary>
+  
 ```html
 <msys-download-all data-label="Download All" data-content="{{JSONstringify this 2}}" data-icon="Download"></msys-download-all>
 ```  
@@ -218,10 +232,12 @@ Permette di fare il download di tutti i file contenuti nei risultati della ricer
 | `data-content`    | Il contesto della search result webpart.                                                                           |
 | `data-label`      | Il testo vicino al bottone.                                                                                        |
 | `data-icon`       | L'icona del bottone.                                                                                               |
+  
+</details>
 
 ### Invoke Power Automate Flow
 
-Chiama un flow Power Automate con un HTTP Trigger con i seguenti parametri.  
+Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i seguenti parametri.  
 
 ```json
 {
@@ -230,7 +246,9 @@ Chiama un flow Power Automate con un HTTP Trigger con i seguenti parametri.
     "userEmail": "userEmail"
 }
 ```
-
+<details>
+  <summary>Details</summary>
+  
 ```html
 <msys-call-flow data-content="{{JSONstringify this 2}}" data-label="Download All with Flow" data-list-settings="Settings" data-settings-key="SPFX_InvokeFlowComponent" data-icon="Page"></msys-call-flow>
 ```  
@@ -242,11 +260,16 @@ Chiama un flow Power Automate con un HTTP Trigger con i seguenti parametri.
 | `data-icon`                | L'icona del bottone.                                                                                               |
 | `data-list-settings`       | Il titolo della lista Settings. Deve essere nello stesso sito.                                                     |
 | `data-settings-key`        | La chiave di ricerca dell'item della lista Settings.                                                               |
+  
+</details>
 
 ### Download Search Results in Excel file
 
-Mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle.
+Questo componente mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle.
 
+<details>
+  <summary>Details</summary>
+  
 ```html
 <msys-results-excel data-label="Download Excel" data-content="{{JSONstringify this 2}}" data-icon="ExcelLogo"></msys-results-excel>
 ``` 
@@ -256,6 +279,8 @@ Mostra un bottone che permette di creare un file Excel con tutti i risultati. L'
 | `data-content`             | Il contesto della search result webpart.                                                                           |
 | `data-label`               | Il testo vicino al bottone.                                                                                        |
 | `data-icon`                | L'icona del bottone.                                                                                               |
+  
+</details>
 
 ## Heandlebars Helpers  
 
