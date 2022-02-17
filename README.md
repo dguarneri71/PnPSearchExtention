@@ -9,7 +9,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 ## Get Started
 
-- Install and configure the [PnP Modern Search - Extensibility samples](https://microsoft-search.github.io/pnp-modern-search/installation/) in your SharePoint Online environment.
+- Install and configure the [PnP Modern Search - Extensibility samples](https://microsoft-search.github.io/pnp-modern-search/installation/) in your SharePoint Online environment. (GUID: cd44d351-d45a-4c20-8eed-8d75cae02282)
 
 ## Web Components
 
@@ -25,6 +25,8 @@ Usati per sperimentare. Non verranno descritti.
 - [msys-title-border](#title-border-componet)
 - [msys-css-loader](#css-loader)
 - msys-download-all
+- msys-call-flow
+- [msys-results-excel](#download-search-results-in-excel-file)
 
 ## Components description
 
