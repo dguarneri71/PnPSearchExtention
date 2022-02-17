@@ -193,7 +193,7 @@ Usati per sperimentare. Non verranno descritti.
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `data-css-url`    | The web component class for that component.                                                                        |
 
-### Download File
+### Download Files
 
 Permette di fare il download di tutti i file contenuti nei risultati della ricerca.
 
@@ -230,6 +230,20 @@ Chiama un flow Power Automate con un HTTP Trigger con i seguenti parametri.
 | `data-icon`                | L'icona del bottone.                                                                                               |
 | `data-list-settings`       | Il titolo della lista Settings. Deve essere nello stesso sito.                                                     |
 | `data-settings-key`        | La chiave di ricerca dell'item della lista Settings.                                                               |
+
+### Download Search Results in Excel file
+
+Mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle.
+
+```html
+<msys-results-excel data-label="Download Excel" data-content="{{JSONstringify this 2}}" data-icon="ExcelLogo"></msys-results-excel>
+``` 
+
+| Property                   | Description                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `data-content`             | Il contesto della search result webpart.                                                                           |
+| `data-label`               | Il testo vicino al bottone.                                                                                        |
+| `data-icon`                | L'icona del bottone.                                                                                               |
 
 ## Heandlebars Helpers  
 
