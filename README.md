@@ -287,7 +287,7 @@ Questo componente mostra un bottone che permette di creare un file Excel con tut
 | Title                   | Type                                                                                                        |
 | ------------------------| ------------------------------------------------------------------------------------------------------------|
 | Title                   | TEXT                                                                                                        |
-| DisplayName             | TEXT                                                                                                        |
+| Label                   | TEXT                                                                                                        |
 
 </details>
 
