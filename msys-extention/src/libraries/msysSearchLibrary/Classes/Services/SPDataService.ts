@@ -12,6 +12,9 @@ import QueryData from '../Entities/QueryData';
 import InvokeFlowResult from "../Entities/InvokeFlowResult";
 import { FieldNames } from '../Constants';
 import SettingItem from '../Entities/SettingItem';
+import { FieldCollectionDataValue } from '../Entities/FieldCollectionDataValue';
+import { isEmpty } from '@microsoft/sp-lodash-subset';
+import { Helper } from '../../Helpers/Helper';
 
 const LOG_SOURCE: string = 'SPDataService';
 
@@ -20,30 +23,105 @@ export default class SPDataService implements IDataService {
 
     constructor(context: PageContext, httpClient: HttpClient) {
         console.log(LOG_SOURCE + " - constructor - absoluteUrl: ", context.web.absoluteUrl);
-        this._httpClient = httpClient;                
+        this._httpClient = httpClient;
         sp.setup({
             pageContext: context
         });
     }
 
     /**
-     * Esegue una query al motore di ricerca di SharePoint
+     * Esegue una query al motore di ricerca di SharePoint, tenendo conto anche dei RefinementFilters
      * @param query 
      * @param count 
      * @returns 
      */
-    public async getSearchResult(query: QueryData, count: number): Promise<ISearchResult[]> {
+    public async getSearchResult(query: QueryData, count: number, moment: any): Promise<ISearchResult[]> {
         console.log(LOG_SOURCE + " - getSearchResult(): ", query, count);
 
-        const searchResults: SearchResults = await sp.search(<ISearchQuery>{
-            Querytext: query.queryText,
-            RowLimit: count,
-            SelectProperties: query.SelectProperties,
-            EnableQueryRules: query.enableQueryRules,
-            SourceId: query.resultSourceId,
-            QueryTemplate: query.queryTemplate,
-            TrimDuplicates: false,
-        });
+        let searchQuery: ISearchQuery = {};
+        searchQuery.Querytext = query.queryText;
+        searchQuery.RowLimit = count;
+        searchQuery.SelectProperties = query.SelectProperties;
+        searchQuery.EnableQueryRules = query.enableQueryRules;
+        searchQuery.SourceId = query.resultSourceId;
+        searchQuery.QueryTemplate = query.queryTemplate;
+        searchQuery.TrimDuplicates = false;
+
+        let refinementFilters: string[] = !isEmpty(query.refinementFilters) ? [query.refinementFilters] : [];
+
+        if (!isEmpty(query.selectedFilters)) {
+
+            // Set list of refiners to retrieve
+            searchQuery.Refiners = query.filtersConfiguration.map(filterConfig => {
+
+                // Special case with Date managed properties
+                const regexExpr = "(RefinableDate\\d+)(?=,|$)|" +
+                    "(RefinableDateInvariant00\\d+)(?=,|$)|" +
+                    "(RefinableDateSingle\\d+)(?=,|$)|" +
+                    "(LastModifiedTime)(?=,|$)|" +
+                    "(LastModifiedTimeForRetention)(?=,|$)|" +
+                    "(Created)(?=,|$)|" +
+                    "(Date\\d+)(?=,|$)|" +
+                    "(EndDate)(?=,|$)|" +
+                    "(.+OWSDATE)(?=,|$)|" +
+                    "(EventsRollUpEndDate)(?=,|$)|" +
+                    "(EventsRollUpStartDate)(?=,|$)|" +
+                    "(FirstPublishedDate)(?=,|$)|" +
+                    "(ImageDateCreated)(?=,|$)|" +
+                    "(LastAnalyticsUpdateTime)(?=,|$)|" +
+                    "(ModifierDates)(?=,|$)|" +
+                    "(ClassificationLastScan)(?=,|$)|" +
+                    "(ComplianceTagWrittenTime)(?=,|$)|" +
+                    "(ContentModifiedTime)(?=,|$)|" +
+                    "(DocumentAnalyticsLastActivityTimestamp)(?=,|$)|" +
+                    "(ExpirationTime)(?=,|$)|" +
+                    "(LastSharedByTime)(?=,|$)|" +
+                    "(StartDate)(?=,|$)|" +
+                    "(TagEventDate)(?=,|$)|" +
+                    "(processingtime)(?=,|$)|" +
+                    "(ExtractedDate)(?=,|$)";
+
+                const refinableDateRegex = new RegExp(regexExpr.replace(/\s+/gi, ''), 'gi');
+                if (refinableDateRegex.test(filterConfig.filterName)) {
+
+                    const pastYear = moment(new Date()).subtract(1, 'years').subtract('minutes', 1).toISOString();
+                    const past3Months = moment(new Date()).subtract(3, 'months').subtract('minutes', 1).toISOString();
+                    const pastMonth = moment(new Date()).subtract(1, 'months').subtract('minutes', 1).toISOString();
+                    const pastWeek = moment(new Date()).subtract(1, 'week').subtract('minutes', 1).toISOString();
+                    const past24hours = moment(new Date()).subtract(24, 'hours').subtract('minutes', 1).toISOString();
+                    const today = new Date().toISOString();
+
+                    return `${filterConfig.filterName}(discretize=manual/${pastYear}/${past3Months}/${pastMonth}/${pastWeek}/${past24hours}/${today})`;
+
+                }
+                else {
+                    return filterConfig.filterName;
+                }
+
+            }).join(',');
+
+            // Get refinement filters
+            if (query.selectedFilters.length > 0) {
+
+                // Make sure, if we have multiple filters, at least two filters have values to avoid apply an operator ('or','and') on only one condition failing the query.
+                if (query.selectedFilters.length > 1 && query.selectedFilters.filter(selectedFilter => selectedFilter.values.length > 0).length > 1) {
+                    const refinementString = Helper.buildFqlRefinementString(query.selectedFilters, moment).join(',');
+                    if (!isEmpty(refinementString)) {
+                        refinementFilters = refinementFilters.concat([`${query.filterOperator}(${refinementString})`]);
+                    }
+
+                } else {
+                    refinementFilters = refinementFilters.concat(Helper.buildFqlRefinementString(query.selectedFilters, moment));
+                }
+            }
+
+        }
+
+        searchQuery.RefinementFilters = refinementFilters;
+
+        console.log(LOG_SOURCE + " - getSearchResult() - searchQuery: ", searchQuery);
+
+        const searchResults: SearchResults = await sp.search(searchQuery);
 
         console.log(LOG_SOURCE + " - getSearchResult() - ElapsedTime: ", searchResults.ElapsedTime);
         console.log(LOG_SOURCE + " - getSearchResult() - RowCount: ", searchResults.RowCount);
@@ -118,6 +196,32 @@ export default class SPDataService implements IDataService {
                     result.error = error;
                     res(result);
                 });
+        });
+    }
+
+    /**
+     * 
+     * @param listTitle 
+     */
+    public getLabels(listTitle: string): Promise<FieldCollectionDataValue[]> {
+        console.log(LOG_SOURCE + " - getLabels() - listTitle: ", listTitle);
+        let results: FieldCollectionDataValue[] = [];
+        return new Promise<FieldCollectionDataValue[]>((res, reject) => {
+            let labelsList: IList = sp.web.lists.getByTitle(listTitle);
+            labelsList.items.select("ID", "Title", "Label").get().then(items => {
+                console.log(LOG_SOURCE + " - getLabels() - items: ", items);
+                for (let index = 0; index < items.length; index++) {
+                    const element = items[index];
+                    let result: FieldCollectionDataValue = new FieldCollectionDataValue();
+                    result.Title = element.Title;
+                    result.DisplayName = element["Label"];
+                    results.push(result);
+                }
+                console.log(LOG_SOURCE + " - getLabels() - labels: ", results);
+                res(results);
+            }).catch(reason => {
+                reject(reason);
+            });
         });
     }
 

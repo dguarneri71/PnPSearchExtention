@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BaseWebComponent } from '@pnp/modern-search-extensibility';
+import { BaseWebComponent, IDataFilter, IDataFilterConfiguration } from '@pnp/modern-search-extensibility';
 import { IconButton, IIconProps, initializeIcons, CommandBarButton, Panel, PanelType, DefaultButton, PrimaryButton, Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
@@ -12,13 +12,16 @@ import { Helper } from '../../Helpers/Helper';
 import { FieldCollectionDataValue } from '../../Classes/Entities/FieldCollectionDataValue';
 import { PnPClientStorage } from "@pnp/core";
 import { stringIsNullOrEmpty } from "@pnp/common";
+import { DateHelper } from '../../Helpers/DateHelper';
 
 export interface IExcelComponentProps {
     content?: {}; //tutto il contenuto della Search Result WP
     label?: string;
     icon?: string;
+    labelsListTitle?: string;
     context: PageContext;
     httpClient: HttpClient;
+    dateHelper: DateHelper;
 }
 
 export interface IExcelComponentState {
@@ -42,6 +45,7 @@ const STORAGE_KEY: string = "ExcelHeaders";
 export class ExcelComponent extends React.Component<IExcelComponentProps, IExcelComponentState> {
     private dataService: IDataService;
     private storage: PnPClientStorage;
+    private moment: any;
 
     constructor(props: IExcelComponentProps) {
         super(props);
@@ -61,6 +65,8 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 valueData.DisplayName = value;
                 return valueData;
             });
+
+
             this.storage.local.put(STORAGE_KEY, _values);
         }
 
@@ -72,6 +78,20 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
             showPanel: false,
             headerLabels: _values
         };
+    }
+
+    public async componentWillMount() {
+        this.moment = await this.props.dateHelper.moment();
+
+        if (stringIsNullOrEmpty(this.props.labelsListTitle) == false) {
+            const items: FieldCollectionDataValue[] = await this.dataService.getLabels(this.props.labelsListTitle);
+            console.log(LOG_SOURCE + " - componentWillMount() - HeaderLabels: ", items);
+            if (items.length > 0) {
+                this.setState({
+                    headerLabels: items
+                });
+            }
+        }
     }
 
     public render() {
@@ -95,15 +115,15 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     type: DialogType.normal,
                     title: 'Download Search Result',
                     subText: ''
-                  }}
-                  modalProps={{
+                }}
+                modalProps={{
                     isBlocking: true,
                     styles: { main: { maxWidth: 450 } }
-                  }}
+                }}
             >
-                <FieldCollectionData
+                {stringIsNullOrEmpty(this.props.labelsListTitle) && <FieldCollectionData
                     key={"FieldCollectionData"}
-                    label={"Excel Columns"}
+                    label={"Define Excel Columns"}
                     manageBtnLabel={"Manage"}
                     onChanged={this._onChangeFieldCollectionData.bind(this)}
                     panelHeader={"Define Excel File Columns"}
@@ -118,38 +138,13 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     ]}
                     value={this.state.headerLabels}
                 />
+                }
+
                 <DialogFooter>
                     <PrimaryButton onClick={this.__download.bind(this)} text="Download Excel" />
                     <DefaultButton onClick={this._hidePanel} text="Cancel" />
                 </DialogFooter>
             </Dialog>
-
-            {/* <Panel
-                isOpen={this.state.showPanel}
-                onDismiss={this._hidePanel}
-                type={PanelType.largeFixed}
-                closeButtonAriaLabel="Close"
-                headerText="Download Search Result"
-            >
-                <DefaultButton text="Download Excel" onClick={this.__download.bind(this)} />
-                <FieldCollectionData
-                    key={"FieldCollectionData"}
-                    label={"Excel Columns"}
-                    manageBtnLabel={"Manage"}
-                    onChanged={this._onChangeFieldCollectionData.bind(this)}
-                    panelHeader={"Define Excel File Columns"}
-
-                    executeFiltering={(searchFilter: string, item: any) => {
-                        return item[HEARDER_TITLE] === +searchFilter;
-                    }}
-                    itemsPerPage={10}
-                    fields={[
-                        { id: HEARDER_TITLE.valueOf(), title: "Property Name", type: CustomCollectionFieldType.string, required: true },
-                        { id: HEARDER_DISPLAY_NAME.valueOf(), title: "Column Name", type: CustomCollectionFieldType.string, required: true },
-                    ]}
-                    value={this.state.headerLabels}
-                />
-            </Panel> */}
         </>;
     }
 
@@ -179,24 +174,36 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
         let queryTemplate: string = dataSourceProperties["queryTemplate"];
         let resultSourceId: string = dataSourceProperties["resultSourceId"];
+        let selectedFilters: IDataFilter[] = this.props.content["filters"]["selectedFilters"] as IDataFilter[];
+        console.log(LOG_SOURCE + " - selectedFilters: ", selectedFilters);
+        let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
+        console.log(LOG_SOURCE + " - filtersConfiguration: ", filtersConfiguration);
+        let filterOperator: string = this.props.content["filters"]["filterOperator"];
+        console.log(LOG_SOURCE + " - filterOperator: ", filterOperator);
+        let refinementFilters: string = dataSourceProperties["refinementFilters"];
+        console.log(LOG_SOURCE + " - refinementFilters: ", refinementFilters);
 
         let selectedProperties = Helper.getValuesForArray(this.state.headerLabels, HEARDER_TITLE);
         console.log(LOG_SOURCE + " - selectedProperties: ", selectedProperties);
         let headers = Helper.getValuesForArray(this.state.headerLabels, HEARDER_DISPLAY_NAME);
         console.log(LOG_SOURCE + " - headers: ", headers);
 
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties);
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator);
 
         console.log(LOG_SOURCE + " - Query: ", query);
 
-        this.dataService.getSearchResult(query, count).then(results => {
+        this.dataService.getSearchResult(query, count, this.moment).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
             Helper.downloadExcel(results, selectedProperties, headers);
+
+            this.setState({
+                showPanel: false
+            });
         });
     }
 }
 
-//<msys-results-excel data-label="Download Excel" data-content="{{JSONstringify this 2}}" data-icon="ExcelLogo"></msys-results-excel>
+//<msys-results-excel data-label="Download Excel" data-content="{{JSONstringify this 2}}" data-icon="ExcelLogo" labels-list-title="Header Mapping"></msys-results-excel>
 export class ExcelWebComponent extends BaseWebComponent {
     public constructor() {
         super();
@@ -205,11 +212,13 @@ export class ExcelWebComponent extends BaseWebComponent {
     public async connectedCallback() {
         let props = this.resolveAttributes();
         this._serviceScope.whenFinished(() => {
+            console.log(LOG_SOURCE + " - _serviceScope: ", this._serviceScope);
             let _httpClient: HttpClient = this._serviceScope.consume(HttpClient.serviceKey);
             console.log(LOG_SOURCE + " - _httpClient: ", _httpClient);
             let _pageContext: PageContext = this._serviceScope.consume(PageContext.serviceKey);
             console.log(LOG_SOURCE + " - _pageContext: ", _pageContext);
-            const customComponent = <ExcelComponent context={_pageContext} httpClient={_httpClient} {...props} />;
+            let _dateHelper = this._serviceScope.consume<DateHelper>(DateHelper.ServiceKey);
+            const customComponent = <ExcelComponent context={_pageContext} httpClient={_httpClient} dateHelper={_dateHelper} {...props} />;
             ReactDOM.render(customComponent, this);
         });
     }

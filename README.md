@@ -32,7 +32,7 @@ Usati per sperimentare. Non verranno descritti.
 
 ### Border Component
 
-Questo componente permette di definire un area con un bordo in cui inserire altri componenti. 
+Questo componente permette di definire un area con un bordo in cui inserire altri componenti.
 
 <details>
   <summary>Details</summary>
@@ -81,7 +81,7 @@ Questo componente permette di definire un area con un bordo in cui inserire altr
 
 ### Title Border Componet
 
-Questo componente permette di definire un area con un bordo e un titolo in cui inserire altri componenti. 
+Questo componente permette di definire un area con un bordo e un titolo in cui inserire altri componenti.
 
 <details>
   <summary>Details</summary>
@@ -201,7 +201,7 @@ Questo componente permette di definire un area con un bordo e un titolo in cui i
   
 ### Css Loader
 
-Questo componente permette di inserire un riferimento a un file css esterno. 
+Questo componente permette di inserire un riferimento a un file css esterno.
 
 <details>
   <summary>Details</summary>
@@ -218,7 +218,7 @@ Questo componente permette di inserire un riferimento a un file css esterno.
 
 ### Download Files
 
-Questo componente permette di fare il download di tutti i file contenuti nei risultati della ricerca. Scarica un file alla volta. 
+Questo componente permette di fare il download di tutti i file contenuti nei risultati della ricerca. Scarica un file alla volta.
 
 <details>
   <summary>Details</summary>
@@ -246,6 +246,7 @@ Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i segue
     "userEmail": "userEmail"
 }
 ```
+
 <details>
   <summary>Details</summary>
   
@@ -271,15 +272,23 @@ Questo componente mostra un bottone che permette di creare un file Excel con tut
   <summary>Details</summary>
   
 ```html
-<msys-results-excel data-label="Download Excel" data-content="{{JSONstringify this 2}}" data-icon="ExcelLogo"></msys-results-excel>
-``` 
+<msys-results-excel data-label="Download Excel" data-content="{{JSONstringify this 2}}" data-icon="ExcelLogo" labels-list-title="Header Mapping"></msys-results-excel>
+```
 
 | Property                   | Description                                                                                                        |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `data-content`             | Il contesto della search result webpart.                                                                           |
 | `data-label`               | Il testo vicino al bottone.                                                                                        |
 | `data-icon`                | L'icona del bottone.                                                                                               |
+| `labels-list-title`        | Il titolo della lista di mapping tra "Search Managed Properties" e "Display Name". Deve essere nello stesso sito.  |
   
+  La lista di mapping deve avere le seguenti colonne:
+
+| Title                   | Type                                                                                                        |
+| ------------------------| ------------------------------------------------------------------------------------------------------------|
+| Title                   | TEXT                                                                                                        |
+| DisplayName             | TEXT                                                                                                        |
+
 </details>
 
 ## Heandlebars Helpers  

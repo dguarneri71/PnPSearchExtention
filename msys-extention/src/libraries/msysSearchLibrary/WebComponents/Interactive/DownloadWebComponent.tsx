@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import styles from './DownloadWebComponent.module.scss';
-import { BaseWebComponent } from '@pnp/modern-search-extensibility';
+import { BaseWebComponent, IDataFilter, IDataFilterConfiguration } from '@pnp/modern-search-extensibility';
 import { IconButton, IIconProps, initializeIcons, CommandBarButton } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
@@ -9,6 +9,7 @@ import { IDataService } from '../../Classes/Services/IDataService';
 import SPDataService from '../../Classes/Services/SPDataService';
 import QueryData from '../../Classes/Entities/QueryData';
 import DownloadFile from '../../Classes/Entities/DownloadFile';
+import { DateHelper } from '../../Helpers/DateHelper';
 
 export interface IDownloadComponentProps {
     content?: {}; //tutto il contenuto della Search Result WP
@@ -16,6 +17,7 @@ export interface IDownloadComponentProps {
     icon?: string;
     context: PageContext;
     httpClient: HttpClient;
+    dateHelper: DateHelper;
 }
 
 export interface IDownloadComponentState {
@@ -32,6 +34,7 @@ const LABEL: string = 'Download All';
 
 export class DownloadComponent extends React.Component<IDownloadComponentProps, IDownloadComponentState> {
     private dataService: IDataService;
+    private moment: any;
 
     constructor(props: IDownloadComponentProps) {
         super(props);
@@ -42,6 +45,10 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             isCalloutVisible: false,
             callOutMsg: ""
         };
+    }
+
+    public async componentWillMount() {
+        this.moment = await this.props.dateHelper.moment();
     }
 
     public render() {
@@ -74,10 +81,14 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
         let queryTemplate: string = dataSourceProperties["queryTemplate"];
         let resultSourceId: string = dataSourceProperties["resultSourceId"];
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path"]);
+        let selectedFilters: IDataFilter[] = this.props.content["filters"]["selectedFilters"] as IDataFilter[];
+        let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
+        let filterOperator: string = this.props.content["filters"]["filterOperator"];
+        let refinementFilters: string = dataSourceProperties["refinementFilters"];
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator);
         console.log(LOG_SOURCE + " - Query: ", query);
 
-        this.dataService.getSearchResult(query, count).then(results => {
+        this.dataService.getSearchResult(query, count, this.moment).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
             for (let index = 0; index < results.length; index++) {
                 const element = results[index];
@@ -138,7 +149,8 @@ export class DownloadWebComponent extends BaseWebComponent {
             console.log(LOG_SOURCE + " - _httpClient: ", _httpClient);
             let _pageContext: PageContext = this._serviceScope.consume(PageContext.serviceKey);
             console.log(LOG_SOURCE + " - _pageContext: ", _pageContext);
-            const customComponent = <DownloadComponent context={_pageContext} httpClient={_httpClient} {...props} />;
+            let _dateHelper = this._serviceScope.consume<DateHelper>(DateHelper.ServiceKey);
+            const customComponent = <DownloadComponent context={_pageContext} httpClient={_httpClient} dateHelper={_dateHelper} {...props} />;
             ReactDOM.render(customComponent, this);
         });
     }
