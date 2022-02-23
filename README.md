@@ -25,8 +25,8 @@ Used to experiment. They will not be described.
 - [msys-border](#border-component)
 - [msys-title-border](#title-border-componet)
 - [msys-css-loader](#css-loader)
-- msys-download-all
-- msys-call-flow
+- [msys-download-all](#download-files)
+- [msys-call-flow](#invoke-power-automate-flow)
 - [msys-results-excel](#download-search-results-in-excel-file)
 
 ## Components description
