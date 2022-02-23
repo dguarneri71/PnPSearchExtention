@@ -266,7 +266,7 @@ Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i segue
 
 ### Download Search Results in Excel file
 
-Questo componente mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle.
+Questo componente mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle. Oppure è possibile indicare una lista contenente l'associazione managed property e label da mostrare come titolo della colonna.
 
 <details>
   <summary>Details</summary>
