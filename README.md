@@ -15,6 +15,7 @@ This code is from [PnP Modern Search solution (v4)](https://github.com/microsoft
 
 **Demo components:**  
 Usati per sperimentare. Non verranno descritti.
+Used to experiment. They will not be described.
 
 - dg-custom-component
 - dg-demo-component
@@ -33,6 +34,7 @@ Usati per sperimentare. Non verranno descritti.
 ### Border Component
 
 Questo componente permette di definire un area con un bordo in cui inserire altri componenti.
+This component allows you to define an area with a border in which to insert other components.
 
 <details>
   <summary>Details</summary>
@@ -52,12 +54,12 @@ Questo componente permette di definire un area con un bordo in cui inserire altr
 
 | Property          | Description                                                                                                        |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `data-color`      | string - codice colore. | Colore del bordo.                                                                        |
-| `data-size`       | number - in pixel. Dimensione in pixel del bordo.                                                                  |
-| `data-hide`       | boolean - true | false. Nasconde il bordo.                                                                         |
-| `data-class-name` | string. Classe assegnata al contenitore principale.                                                                |
-| `data-css-url`    | string. Url del file CSS esterno.                                                                                  |
-| `template`        | `<template id="border-content">{content}</template>`. Il contenuto.                                                |
+| `data-color`      | string - color code. | Border color.                                                                        |
+| `data-size`       | number - in pixel. Pixel size of the border.                                                                  |
+| `data-hide`       | boolean - true | false. Hide the edge.                                                                         |
+| `data-class-name` | string. Class assigned to the parent container.                                                                |
+| `data-css-url`    | string. Url of the external CSS file.                                                                                  |
+| `template`        | `<template id="border-content">{content}</template>`. The content.                                                |
 
 #### Examples Border
 
@@ -75,13 +77,14 @@ Questo componente permette di definire un area con un bordo in cui inserire altr
 </msys-border>
 ```
 
-![Esempio border](./assets/images/Border.png "Esempio border")
+![Example border](./assets/images/Border.png "Esempio border")
   
 </details>
 
 ### Title Border Componet
 
-Questo componente permette di definire un area con un bordo e un titolo in cui inserire altri componenti.
+Questo componente permette di definire un'area con un bordo e un titolo in cui inserire altri componenti.
+This component allows you to define an area with a border and a title in which to insert other components.
 
 <details>
   <summary>Details</summary>
@@ -164,7 +167,7 @@ Questo componente permette di definire un area con un bordo e un titolo in cui i
 </msys-title-border>
 ```
 
-![Esempio 1](./assets/images/TitleBorder1.png "Esempio 1")
+![Example 1](./assets/images/TitleBorder1.png "Example 1")
 
 ```html
 <style>
@@ -195,13 +198,14 @@ Questo componente permette di definire un area con un bordo e un titolo in cui i
 </msys-title-border>
 ```
 
-![Esempio 2](./assets/images/TitleBorder2.png "Esempio 2")
+![Example 2](./assets/images/TitleBorder2.png "Example 2")
 
 </details>
   
 ### Css Loader
 
 Questo componente permette di inserire un riferimento a un file css esterno.
+This component allows you to insert a reference to an external css file.
 
 <details>
   <summary>Details</summary>
@@ -219,6 +223,7 @@ Questo componente permette di inserire un riferimento a un file css esterno.
 ### Download Files
 
 Questo componente permette di fare il download di tutti i file contenuti nei risultati della ricerca. Scarica un file alla volta.
+This component allows you to download all the files contained in the search results. Download one file at a time.
 
 <details>
   <summary>Details</summary>
@@ -238,6 +243,7 @@ Questo componente permette di fare il download di tutti i file contenuti nei ris
 ### Invoke Power Automate Flow
 
 Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i seguenti parametri.  
+This component calls a Power Automate flow of type HTTP Trigger with the following parameters.
 
 ```json
 {
@@ -267,6 +273,7 @@ Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i segue
 ### Download Search Results in Excel file
 
 Questo componente mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle. Oppure è possibile indicare una lista contenente l'associazione managed property e label da mostrare come titolo della colonna.
+This component shows a button that allows you to create an Excel file with all the results. The user can decide which columns to keep and also rename them. Or it is possible to indicate a list containing the association managed property and label to be shown as the title of the column.
 
 <details>
   <summary>Details</summary>
@@ -282,7 +289,7 @@ Questo componente mostra un bottone che permette di creare un file Excel con tut
 | `data-icon`                | L'icona del bottone.                                                                                               |
 | `labels-list-title`        | Il titolo della lista di mapping tra "Search Managed Properties" e "Display Name". Deve essere nello stesso sito.  |
   
-  La lista di mapping deve avere le seguenti colonne:
+  La lista di mapping deve avere le seguenti colonne (The mapping list must have the following columns):
 
 | Title                   | Type                                                                                                        |
 | ------------------------| ------------------------------------------------------------------------------------------------------------|
