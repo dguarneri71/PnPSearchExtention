@@ -33,7 +33,7 @@ Used to experiment. They will not be described.
 
 ### Border Component
 
-Questo componente permette di definire un area con un bordo in cui inserire altri componenti.
+Questo componente permette di definire un area con un bordo in cui inserire altri componenti.  
 This component allows you to define an area with a border in which to insert other components.
 
 <details>
@@ -83,7 +83,7 @@ This component allows you to define an area with a border in which to insert oth
 
 ### Title Border Componet
 
-Questo componente permette di definire un'area con un bordo e un titolo in cui inserire altri componenti.
+Questo componente permette di definire un'area con un bordo e un titolo in cui inserire altri componenti.  
 This component allows you to define an area with a border and a title in which to insert other components.
 
 <details>
@@ -204,7 +204,7 @@ This component allows you to define an area with a border and a title in which t
   
 ### Css Loader
 
-Questo componente permette di inserire un riferimento a un file css esterno.
+Questo componente permette di inserire un riferimento a un file css esterno.  
 This component allows you to insert a reference to an external css file.
 
 <details>
@@ -222,7 +222,7 @@ This component allows you to insert a reference to an external css file.
 
 ### Download Files
 
-Questo componente permette di fare il download di tutti i file contenuti nei risultati della ricerca. Scarica un file alla volta.
+Questo componente permette di fare il download di tutti i file contenuti nei risultati della ricerca. Scarica un file alla volta.  
 This component allows you to download all the files contained in the search results. Download one file at a time.
 
 <details>
@@ -272,7 +272,7 @@ This component calls a Power Automate flow of type HTTP Trigger with the followi
 
 ### Download Search Results in Excel file
 
-Questo componente mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle. Oppure è possibile indicare una lista contenente l'associazione managed property e label da mostrare come titolo della colonna.
+Questo componente mostra un bottone che permette di creare un file Excel con tutti i risultati. L'utente può decidere che colonne tenere e anche rinominarle. Oppure è possibile indicare una lista contenente l'associazione managed property e label da mostrare come titolo della colonna.  
 This component shows a button that allows you to create an Excel file with all the results. The user can decide which columns to keep and also rename them. Or it is possible to indicate a list containing the association managed property and label to be shown as the title of the column.
 
 <details>
