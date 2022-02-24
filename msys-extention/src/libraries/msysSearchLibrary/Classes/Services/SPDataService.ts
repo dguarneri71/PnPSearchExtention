@@ -219,7 +219,8 @@ export default class SPDataService implements IDataService {
                 }
                 console.log(LOG_SOURCE + " - getLabels() - labels: ", results);
                 res(results);
-            }).catch(reason => {
+            }).catch(reason => {  
+                Object.keys(reason).forEach(prop => console.log(LOG_SOURCE + " - prop: ", prop, reason[prop]));    
                 reject(reason);
             });
         });

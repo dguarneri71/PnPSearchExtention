@@ -29,6 +29,7 @@ export interface IExcelComponentState {
     callOutMsg: string;
     showPanel: boolean;
     headerLabels: any[];
+    errorMsg: string;
 }
 
 // Initialize icons in case this example uses them
@@ -52,6 +53,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         console.log(LOG_SOURCE + " - props: ", this.props);
         this.dataService = new SPDataService(this.props.context, this.props.httpClient);
         let _values: any[] = [];
+
         this.storage = new PnPClientStorage();
         _values = this.storage.local.get(STORAGE_KEY);
         console.log(LOG_SOURCE + " - Storage HeaderLabels: ", _values);
@@ -66,7 +68,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 return valueData;
             });
 
-
             this.storage.local.put(STORAGE_KEY, _values);
         }
 
@@ -76,7 +77,8 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
             isCalloutVisible: false,
             callOutMsg: "",
             showPanel: false,
-            headerLabels: _values
+            headerLabels: _values,
+            errorMsg: null
         };
     }
 
@@ -84,17 +86,39 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         this.moment = await this.props.dateHelper.moment();
 
         if (stringIsNullOrEmpty(this.props.labelsListTitle) == false) {
-            const items: FieldCollectionDataValue[] = await this.dataService.getLabels(this.props.labelsListTitle);
-            console.log(LOG_SOURCE + " - componentWillMount() - HeaderLabels: ", items);
-            if (items.length > 0) {
+            try {
+                const items: FieldCollectionDataValue[] = await this.dataService.getLabels(this.props.labelsListTitle);
+                console.log(LOG_SOURCE + " - componentWillMount() - HeaderLabels: ", items);
+                if (items.length > 0) {
+                    this.storage.local.put(STORAGE_KEY, items);
+                    this.setState({
+                        headerLabels: items
+                    });
+                }
+            }
+            catch (e) {
+                console.log(LOG_SOURCE + " - componentWillMount() - Error: ", e);
+                let msg = "List '" + this.props.labelsListTitle + "' does not exist.";
+
+                // https://pnp.github.io/pnpjs/concepts/error-handling/
+                // are we dealing with an HttpRequestError?
+                if (e?.isHttpRequestError) {
+                    // we can read the json from the response
+                    const json = await e.response.json();
+                    console.log(LOG_SOURCE + " - componentWillMount() - JSON Error: ", json);
+                    // if we have a value property we can show it
+                    msg = typeof json["odata.error"] === "object" ? json["odata.error"].message.value : e.message;
+                }
+                                
                 this.setState({
-                    headerLabels: items
+                    errorMsg: msg
                 });
             }
         }
     }
 
     public render() {
+        console.log(LOG_SOURCE + " - render() - state: ", this.state);
         let label: string = this.props.label ? this.props.label : LABEL;
         if (this.props.icon) {
             icon.iconName = this.props.icon;
@@ -121,7 +145,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     styles: { main: { maxWidth: 450 } }
                 }}
             >
-                {stringIsNullOrEmpty(this.props.labelsListTitle) && <FieldCollectionData
+                {(stringIsNullOrEmpty(this.props.labelsListTitle) || !stringIsNullOrEmpty(this.state.errorMsg)) && <FieldCollectionData
                     key={"FieldCollectionData"}
                     label={"Define Excel Columns"}
                     manageBtnLabel={"Manage"}
@@ -139,6 +163,8 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     value={this.state.headerLabels}
                 />
                 }
+
+                {!stringIsNullOrEmpty(this.state.errorMsg) && <div style={{ color: "red", fontSize: "12px", paddingTop: "10px" }}>{this.state.errorMsg}</div>}
 
                 <DialogFooter>
                     <PrimaryButton onClick={this.__download.bind(this)} text="Download Excel" />
