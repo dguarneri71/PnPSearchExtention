@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BaseWebComponent, IDataFilter, IDataFilterConfiguration } from '@pnp/modern-search-extensibility';
-import { IconButton, IIconProps, initializeIcons, CommandBarButton, Panel, PanelType, DefaultButton, PrimaryButton, Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react';
+import { IconButton, IIconProps, initializeIcons, CommandBarButton, Spinner, DefaultButton, PrimaryButton, Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
 import { IDataService } from '../../Classes/Services/IDataService';
@@ -10,7 +10,7 @@ import QueryData from '../../Classes/Entities/QueryData';
 import { FieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-controls-react/lib/FieldCollectionData';
 import { Helper } from '../../Helpers/Helper';
 import { FieldCollectionDataValue } from '../../Classes/Entities/FieldCollectionDataValue';
-import { PnPClientStorage } from "@pnp/core";
+//import { PnPClientStorage } from "@pnp/core";
 import { stringIsNullOrEmpty } from "@pnp/common";
 import { DateHelper } from '../../Helpers/DateHelper';
 
@@ -30,6 +30,7 @@ export interface IExcelComponentState {
     showPanel: boolean;
     headerLabels: any[];
     errorMsg: string;
+    showSpinner: boolean;
 }
 
 // Initialize icons in case this example uses them
@@ -40,12 +41,14 @@ const icon: IIconProps = { iconName: 'ExcelDocument' };
 const LABEL: string = 'Download Results in Excel';
 const HEARDER_TITLE: string = "Title";
 const HEARDER_DISPLAY_NAME: string = "DisplayName";
+const HEARDER_TYPE: string = "Type";
+const HEARDER_FORMAT: string = "Format";
 const STORAGE_KEY: string = "ExcelHeaders";
 
 //TODO: aggiungere salvataggio in cookie delle headerLabels
 export class ExcelComponent extends React.Component<IExcelComponentProps, IExcelComponentState> {
     private dataService: IDataService;
-    private storage: PnPClientStorage;
+    //private storage: PnPClientStorage;
     private moment: any;
 
     constructor(props: IExcelComponentProps) {
@@ -54,9 +57,9 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         this.dataService = new SPDataService(this.props.context, this.props.httpClient);
         let _values: any[] = [];
 
-        this.storage = new PnPClientStorage();
-        _values = this.storage.local.get(STORAGE_KEY);
-        console.log(LOG_SOURCE + " - Storage HeaderLabels: ", _values);
+        //this.storage = new PnPClientStorage();
+        //_values = this.storage.local.get(STORAGE_KEY);
+        //console.log(LOG_SOURCE + " - Storage HeaderLabels: ", _values);
 
         if (_values == null) {
             let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
@@ -68,7 +71,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 return valueData;
             });
 
-            this.storage.local.put(STORAGE_KEY, _values);
+            //this.storage.local.put(STORAGE_KEY, _values);
         }
 
         console.log(LOG_SOURCE + " - HeaderLabels: ", _values);
@@ -78,7 +81,8 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
             callOutMsg: "",
             showPanel: false,
             headerLabels: _values,
-            errorMsg: null
+            errorMsg: null,
+            showSpinner: false
         };
     }
 
@@ -90,7 +94,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 const items: FieldCollectionDataValue[] = await this.dataService.getLabels(this.props.labelsListTitle);
                 console.log(LOG_SOURCE + " - componentWillMount() - HeaderLabels: ", items);
                 if (items.length > 0) {
-                    this.storage.local.put(STORAGE_KEY, items);
+                    //this.storage.local.put(STORAGE_KEY, items);
                     this.setState({
                         headerLabels: items
                     });
@@ -109,7 +113,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                     // if we have a value property we can show it
                     msg = typeof json["odata.error"] === "object" ? json["odata.error"].message.value : e.message;
                 }
-                                
+
                 this.setState({
                     errorMsg: msg
                 });
@@ -164,10 +168,12 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 />
                 }
 
+                {this.state.showSpinner && <Spinner label="Waiting..." />}
+
                 {!stringIsNullOrEmpty(this.state.errorMsg) && <div style={{ color: "red", fontSize: "12px", paddingTop: "10px" }}>{this.state.errorMsg}</div>}
 
                 <DialogFooter>
-                    <PrimaryButton onClick={this.__download.bind(this)} text="Download Excel" />
+                    <PrimaryButton disabled={this.state.showSpinner} onClick={this.__download.bind(this)} text="Download Excel" />
                     <DefaultButton onClick={this._hidePanel} text="Cancel" />
                 </DialogFooter>
             </Dialog>
@@ -184,13 +190,17 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
 
     private _onChangeFieldCollectionData(values: any[]): void {
         console.log(LOG_SOURCE + " - FieldCollectionData: ", values);
-        this.storage.local.put(STORAGE_KEY, values);
+        //this.storage.local.put(STORAGE_KEY, values);
         this.setState({
             headerLabels: values
         });
     }
 
     private __download(event): void {
+        this.setState({
+            showSpinner: true
+        });
+
         let queryText: string = "*";
         if (this.props.content["inputQueryText"]) {
             queryText = this.props.content["inputQueryText"];
@@ -213,6 +223,10 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         console.log(LOG_SOURCE + " - selectedProperties: ", selectedProperties);
         let headers = Helper.getValuesForArray(this.state.headerLabels, HEARDER_DISPLAY_NAME);
         console.log(LOG_SOURCE + " - headers: ", headers);
+        let types = Helper.getValuesForArray(this.state.headerLabels, HEARDER_TYPE);
+        console.log(LOG_SOURCE + " - types: ", types);
+        let formats = Helper.getValuesForArray(this.state.headerLabels, HEARDER_FORMAT);
+        console.log(LOG_SOURCE + " - formats: ", formats);        
 
         let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator);
 
@@ -220,10 +234,11 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
 
         this.dataService.getSearchResult(query, count, this.moment).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
-            Helper.downloadExcel(results, selectedProperties, headers);
+            Helper.downloadExcel(results, selectedProperties, headers, types, formats);
 
             this.setState({
-                showPanel: false
+                showPanel: false,
+                showSpinner: false
             });
         });
     }

@@ -208,13 +208,15 @@ export default class SPDataService implements IDataService {
         let results: FieldCollectionDataValue[] = [];
         return new Promise<FieldCollectionDataValue[]>((res, reject) => {
             let labelsList: IList = sp.web.lists.getByTitle(listTitle);
-            labelsList.items.select("ID", "Title", "Label").get().then(items => {
+            labelsList.items.select("ID", "Title", "Label", "ColumnType", "Format").orderBy("Order").get().then(items => {
                 console.log(LOG_SOURCE + " - getLabels() - items: ", items);
                 for (let index = 0; index < items.length; index++) {
                     const element = items[index];
                     let result: FieldCollectionDataValue = new FieldCollectionDataValue();
                     result.Title = element.Title;
                     result.DisplayName = element["Label"];
+                    result.Type = element["ColumnType"];
+                    result.Format = element["Format"];
                     results.push(result);
                 }
                 console.log(LOG_SOURCE + " - getLabels() - labels: ", results);

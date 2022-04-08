@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { FilterComparisonOperator, IDataFilter } from "@pnp/modern-search-extensibility";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
+import { stringIsNullOrEmpty } from "@pnp/core";
 
 const LOG_SOURCE: string = 'Helper';
 const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -24,7 +25,19 @@ export class Helper {
         return result;
     }
 
-    public static downloadExcel(searhResults: ISearchResult[], selectedProperties: string[], headers: string[]): void {
+    private static formatColumn(worksheet: XLSX.WorkSheet, col: number, t: string, fmt: string) {
+        const range = XLSX.utils.decode_range(worksheet['!ref']);
+        // note: range.s.r + 1 skips the header row
+        for (let row = range.s.r + 1; row <= range.e.r; ++row) {
+            const ref = XLSX.utils.encode_cell({ r: row, c: col });
+            if (worksheet[ref] && worksheet[ref].t === 's') {
+                worksheet[ref].t = t;
+                worksheet[ref].z = fmt;
+            }
+        }
+    }
+
+    public static downloadExcel(searhResults: ISearchResult[], selectedProperties: string[], headers: string[], types: string[], formats: string[]): void {
         //Elimino le colonne aggiuntive non presenti tra selectedProperties
         var aoo = searhResults.map((obj) => {
             return selectedProperties.reduce((acc, key) => {
@@ -35,11 +48,23 @@ export class Helper {
         console.log(LOG_SOURCE + " - sheet_data: ", aoo);
 
         var wb = XLSX.utils.book_new();
-        //let ws = XLSX.utils.json_to_sheet(searhResults);
         let ws = XLSX.utils.json_to_sheet(aoo);
         console.log(LOG_SOURCE + " - sheet: ", ws);
         //Forzo l'header del file Excel con i valori presi da HEADERS - impostati dall'utente
         ws = XLSX.utils.sheet_add_aoa(ws, [headers], { origin: "A1" });
+
+        // applico la formattazione esempio per currency = '$0.00'
+        for (let index = 0; index < types.length; index++) {
+            const type = types[index];
+            if (type !== "String") {
+                var t = type == "Date" ? "d" : "n";
+                var format = formats[index];
+                if (!stringIsNullOrEmpty(format)) {
+                    Helper.formatColumn(ws, index, t, format);
+                }
+            }
+        }
+
         XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
         //Genero il BLOB che rappresenta il file XLSX
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
