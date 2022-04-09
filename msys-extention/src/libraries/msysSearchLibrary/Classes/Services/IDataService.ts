@@ -1,4 +1,5 @@
 import { ISearchResult } from "@pnp/sp/search";
+import DownloadFile from "../Entities/DownloadFile";
 import { FieldCollectionDataValue } from "../Entities/FieldCollectionDataValue";
 import InvokeFlowResult from "../Entities/InvokeFlowResult";
 import QueryData from "../Entities/QueryData";
@@ -9,4 +10,5 @@ export interface IDataService {
     getSettingsBySpecificKey(listTitle: string, key: string): Promise<SettingItem[]>;
     getLabels(listTitle: string): Promise<FieldCollectionDataValue[]>;
     invokePowerAutomateFlowExtended(flowUrl: string, parameters: any, getData: boolean): Promise<InvokeFlowResult>;
+    saveFile(files: DownloadFile[]): Promise<void>;
 }

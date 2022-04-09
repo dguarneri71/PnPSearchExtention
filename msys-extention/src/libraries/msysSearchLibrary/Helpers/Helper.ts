@@ -41,12 +41,16 @@ export class Helper {
 
     public static downloadExcel(searhResults: ISearchResult[], selectedProperties: string[], headers: string[], types: string[], formats: string[]): void {
         //Elimino le colonne aggiuntive non presenti tra selectedProperties
-        var aoo = searhResults.map((obj) => {
-            return selectedProperties.reduce((acc, key) => {
-                acc[key] = obj[key];
-                return acc;
-            }, ({}));
-        });
+        var aoo = searhResults;
+        if (selectedProperties.length > 0) {
+            aoo = searhResults.map((obj) => {
+                return selectedProperties.reduce((acc, key) => {
+                    acc[key] = obj[key];
+                    return acc;
+                }, ({}));
+            });
+        }
+
         console.log(LOG_SOURCE + " - sheet_data: ", aoo);
 
         var wb = XLSX.utils.book_new();
@@ -58,7 +62,7 @@ export class Helper {
         // applico la formattazione esempio per currency = '$0.00'
         for (let index = 0; index < types.length; index++) {
             const type = types[index];
-            if (type !== "String") {
+            if (!stringIsNullOrEmpty(type) && type !== "String") {
                 var t = type == "Date" ? "d" : "n";
                 var format = formats[index];
                 Helper.formatColumn(ws, index, t, format);

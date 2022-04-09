@@ -15,6 +15,9 @@ import SettingItem from '../Entities/SettingItem';
 import { FieldCollectionDataValue } from '../Entities/FieldCollectionDataValue';
 import { isEmpty } from '@microsoft/sp-lodash-subset';
 import { Helper } from '../../Helpers/Helper';
+import DownloadFile from '../Entities/DownloadFile';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const LOG_SOURCE: string = 'SPDataService';
 
@@ -44,7 +47,7 @@ export default class SPDataService implements IDataService {
         searchQuery.SelectProperties = query.SelectProperties;
         searchQuery.EnableQueryRules = query.enableQueryRules;
         searchQuery.SourceId = query.resultSourceId;
-        searchQuery.QueryTemplate = query.queryTemplate;
+        searchQuery.QueryTemplate = query.queryTemplate.replace("{verticals.value}", query.verticalValue);
         searchQuery.TrimDuplicates = false;
 
         let refinementFilters: string[] = !isEmpty(query.refinementFilters) ? [query.refinementFilters] : [];
@@ -221,8 +224,8 @@ export default class SPDataService implements IDataService {
                 }
                 console.log(LOG_SOURCE + " - getLabels() - labels: ", results);
                 res(results);
-            }).catch(reason => {  
-                Object.keys(reason).forEach(prop => console.log(LOG_SOURCE + " - prop: ", prop, reason[prop]));    
+            }).catch(reason => {
+                Object.keys(reason).forEach(prop => console.log(LOG_SOURCE + " - prop: ", prop, reason[prop]));
                 reject(reason);
             });
         });
@@ -248,6 +251,25 @@ export default class SPDataService implements IDataService {
                 reject(reason);
             });
         });
+    }
+
+    // https://stuk.github.io/jszip/
+    public async saveFile(files: DownloadFile[]): Promise<void> {
+        var zip = new JSZip();
+        var img = zip.folder("FILES");
+
+        for (let index = 0; index < files.length; index++) {
+            const element = files[index];
+            const file = sp.web.getFileByUrl(element.download);
+            let content: Blob = await file.getBlob();
+            img.file(element.filename, content, { base64: true });
+        }
+
+        zip.generateAsync({ type: "blob" })
+            .then(function (content) {
+                // see FileSaver.js
+                saveAs(content, "dowbload.zip");
+            });
     }
 
     /******** Private Methods  ********/

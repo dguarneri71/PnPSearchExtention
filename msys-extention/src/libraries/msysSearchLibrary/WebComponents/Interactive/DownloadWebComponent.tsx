@@ -85,7 +85,16 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
         let filterOperator: string = this.props.content["filters"]["filterOperator"];
         let refinementFilters: string = dataSourceProperties["refinementFilters"];
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator);
+        let useVertical: boolean = this.props.content["properties"]["useVerticals"];
+        console.log(LOG_SOURCE + " - useVertical: ", useVertical);
+
+        let verticalValue: string = null;
+        if (useVertical) {
+            verticalValue = this.props.content["verticals"]["selectedVertical"]["value"];
+            console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
+        }
+
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue);
         console.log(LOG_SOURCE + " - Query: ", query);
 
         this.dataService.getSearchResult(query, count, this.moment).then(results => {
@@ -99,9 +108,15 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             }
             console.log(LOG_SOURCE + " - DownloadFiles: ", downloadFiles);
             if (downloadFiles.length > 0) {
-                this.download_files(downloadFiles);
+                //this.download_files(downloadFiles);
+                this.download_files_zip(downloadFiles);
             }
         });
+    }
+
+    //TODO fare metodo per prendere contenuto e zipparlo
+    private download_files_zip(files: DownloadFile[]): void {
+        this.dataService.saveFile(files);
     }
 
     private download_files(files: DownloadFile[]): void {

@@ -210,6 +210,8 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
         let queryTemplate: string = dataSourceProperties["queryTemplate"];
         let resultSourceId: string = dataSourceProperties["resultSourceId"];
+        let useVertical: boolean = this.props.content["properties"]["useVerticals"];
+        console.log(LOG_SOURCE + " - useVertical: ", useVertical);
         let selectedFilters: IDataFilter[] = this.props.content["filters"]["selectedFilters"] as IDataFilter[];
         console.log(LOG_SOURCE + " - selectedFilters: ", selectedFilters);
         let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
@@ -226,9 +228,15 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         let types = Helper.getValuesForArray(this.state.headerLabels, HEARDER_TYPE);
         console.log(LOG_SOURCE + " - types: ", types);
         let formats = Helper.getValuesForArray(this.state.headerLabels, HEARDER_FORMAT);
-        console.log(LOG_SOURCE + " - formats: ", formats);        
+        console.log(LOG_SOURCE + " - formats: ", formats);
 
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator);
+        let verticalValue: string = null;
+        if (useVertical) {
+            verticalValue = this.props.content["verticals"]["selectedVertical"]["value"];
+            console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
+        }
+
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue);
 
         console.log(LOG_SOURCE + " - Query: ", query);
 

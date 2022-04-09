@@ -10,10 +10,11 @@ export default class QueryData {
     public refinementFilters: string;
     public filtersConfiguration: IDataFilterConfiguration[];
     public filterOperator: string;
+    public verticalValue: string;
 
     constructor(queryText: string, enableQueryRules: boolean, queryTemplate: string, resultSourceId: string,
         selectedProperties: string[], filtersConfiguration: IDataFilterConfiguration[],
-        selectedFilters: IDataFilter[], refinementFilters: string, filterOperator: string) {
+        selectedFilters: IDataFilter[], refinementFilters: string, filterOperator: string, verticalValue: string) {
         this.enableQueryRules = enableQueryRules;
         this.queryTemplate = queryTemplate;
         this.queryText = queryText;
@@ -23,5 +24,6 @@ export default class QueryData {
         this.refinementFilters = refinementFilters;
         this.filtersConfiguration = filtersConfiguration;
         this.filterOperator = filterOperator;
+        this.verticalValue = verticalValue;
     }
 }
