@@ -32,7 +32,9 @@ export class Helper {
             const ref = XLSX.utils.encode_cell({ r: row, c: col });
             if (worksheet[ref] && worksheet[ref].t === 's') {
                 worksheet[ref].t = t;
-                worksheet[ref].z = fmt;
+                if (!stringIsNullOrEmpty(fmt)) {
+                    worksheet[ref].z = fmt;
+                }
             }
         }
     }
@@ -59,9 +61,7 @@ export class Helper {
             if (type !== "String") {
                 var t = type == "Date" ? "d" : "n";
                 var format = formats[index];
-                if (!stringIsNullOrEmpty(format)) {
-                    Helper.formatColumn(ws, index, t, format);
-                }
+                Helper.formatColumn(ws, index, t, format);
             }
         }
 

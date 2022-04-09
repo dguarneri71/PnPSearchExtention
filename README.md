@@ -295,6 +295,11 @@ This component shows a button that allows you to create an Excel file with all t
 | ------------------------| ------------------------------------------------------------------------------------------------------------|
 | Title                   | TEXT                                                                                                        |
 | Label                   | TEXT                                                                                                        |
+| Order                   | NUMBER                                                                                                      |
+| Format                  | TEXT                                                                                                        |
+| ColumnType              | CHOICE                                                                                                      |
+
+ColumnType: String, Date, Number, Currency
 
 </details>
 
