@@ -262,7 +262,7 @@ export default class SPDataService implements IDataService {
             const element = files[index];
             const file = sp.web.getFileByUrl(element.download);
             let content: Blob = await file.getBlob();
-            img.file(element.filename, content, { base64: true });
+            img.file(element.filename, content);
         }
 
         zip.generateAsync({ type: "blob" })
