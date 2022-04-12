@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import styles from './DownloadWebComponent.module.scss';
 import { BaseWebComponent, IDataFilter, IDataFilterConfiguration } from '@pnp/modern-search-extensibility';
-import { IconButton, IIconProps, initializeIcons, CommandBarButton } from 'office-ui-fabric-react';
+import { IconButton, IIconProps, initializeIcons, CommandBarButton, Spinner, Dialog, DialogType, ProgressIndicator } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
 import { IDataService } from '../../Classes/Services/IDataService';
@@ -10,6 +10,7 @@ import SPDataService from '../../Classes/Services/SPDataService';
 import QueryData from '../../Classes/Entities/QueryData';
 import DownloadFile from '../../Classes/Entities/DownloadFile';
 import { DateHelper } from '../../Helpers/DateHelper';
+import { stringIsNullOrEmpty } from "@pnp/common";
 
 export interface IDownloadComponentProps {
     content?: {}; //tutto il contenuto della Search Result WP
@@ -23,6 +24,12 @@ export interface IDownloadComponentProps {
 export interface IDownloadComponentState {
     isCalloutVisible: boolean;
     callOutMsg: string;
+    showPanel: boolean;
+    showSpinner: boolean;
+    errorMsg: string;
+    spinnerMsg: string;
+    percentComplete: number;
+    filename: string;
 }
 
 // Initialize icons in case this example uses them
@@ -31,6 +38,7 @@ initializeIcons();
 const LOG_SOURCE: string = 'DownloadComponent';
 const downloadIcon: IIconProps = { iconName: 'Download' };
 const LABEL: string = 'Download All';
+const INTERVAL_INCREMENT = 0.01;
 
 export class DownloadComponent extends React.Component<IDownloadComponentProps, IDownloadComponentState> {
     private dataService: IDataService;
@@ -43,7 +51,13 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
 
         this.state = {
             isCalloutVisible: false,
-            callOutMsg: ""
+            callOutMsg: "",
+            showPanel: false,
+            showSpinner: false,
+            errorMsg: null,
+            spinnerMsg: "Waiting...",
+            percentComplete: 0,
+            filename: ""
         };
     }
 
@@ -52,6 +66,7 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
     }
 
     public render() {
+        const { percentComplete, filename } = this.state;
         console.log(LOG_SOURCE + " - Content: ", this.props.content);
         let items: any[] = this.props.content["data"]["items"];
         console.log(LOG_SOURCE + " - Items: ", items);
@@ -66,7 +81,35 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
                     :
                     (<IconButton iconProps={downloadIcon} title={label} ariaLabel={label} onClick={this.__download.bind(this)} />)
             }
+
+            <Dialog
+                hidden={!this.state.showPanel}
+                onDismiss={this._hidePanel}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Download Search Result',
+                    subText: ''
+                }}
+                modalProps={{
+                    isBlocking: true,
+                    styles: { main: { maxWidth: 450 } }
+                }}
+            >
+                {this.state.showSpinner && <Spinner label={this.state.spinnerMsg} />}
+
+                <ProgressIndicator label="Zipping file" description={filename} percentComplete={percentComplete} />
+
+                {!stringIsNullOrEmpty(this.state.errorMsg) && <div style={{ color: "red", fontSize: "12px", paddingTop: "10px" }}>{this.state.errorMsg}</div>}
+            </Dialog>
         </>;
+    }
+
+    private _showPanel = () => {
+        this.setState({ showPanel: true });
+    }
+
+    private _hidePanel = () => {
+        this.setState({ showPanel: false });
     }
 
     private __download(event): void {
@@ -94,7 +137,7 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
         }
 
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue);
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path", "SPSiteUrl"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue);
         console.log(LOG_SOURCE + " - Query: ", query);
 
         this.dataService.getSearchResult(query, count, this.moment).then(results => {
@@ -102,24 +145,43 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             for (let index = 0; index < results.length; index++) {
                 const element = results[index];
                 if (element["FileType"] && element["FileExtension"] !== "aspx") {
-                    let downloadFile: DownloadFile = new DownloadFile(element["Path"], element["Filename"], webUrl);
+                    let downloadFile: DownloadFile = new DownloadFile(element["Path"], element["Filename"], webUrl, element["SPSiteUrl"]);
                     downloadFiles.push(downloadFile);
                 }
             }
             console.log(LOG_SOURCE + " - DownloadFiles: ", downloadFiles);
             if (downloadFiles.length > 0) {
                 //this.download_files(downloadFiles);
+                this.setState({
+                    showPanel: true,
+                    showSpinner: false
+                });
                 this.download_files_zip(downloadFiles);
             }
         });
     }
 
-    //TODO fare metodo per prendere contenuto e zipparlo
     private download_files_zip(files: DownloadFile[]): void {
-        this.dataService.saveFile(files);
+        this.dataService.downloadZipFile(files, this.progressCallback.bind(this));
     }
 
-    private download_files(files: DownloadFile[]): void {
+    private progressCallback(files: DownloadFile[], index: number, msg: string, finish: boolean): void {
+        if (finish) {
+            this.setState({
+                showPanel: false,
+                showSpinner: false
+            });
+        } else {
+            var perc = ((index+1)/files.length) + INTERVAL_INCREMENT;
+            this.setState({
+                percentComplete: perc,
+                filename: files[index].filename,
+                errorMsg: msg
+            });
+        }
+    }
+
+    /* private download_files(files: DownloadFile[]): void {
         function download_next(i: number) {
             if (i >= files.length) {
                 return;
@@ -148,7 +210,7 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         }
         // Initiate the first download.
         download_next(0);
-    }
+    } */
 }
 
 //<msys-download-all data-label="Download All" data-content="{{JSONstringify this 2}}" data-icon="Download"></msys-download-all>

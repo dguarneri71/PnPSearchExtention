@@ -10,5 +10,5 @@ export interface IDataService {
     getSettingsBySpecificKey(listTitle: string, key: string): Promise<SettingItem[]>;
     getLabels(listTitle: string): Promise<FieldCollectionDataValue[]>;
     invokePowerAutomateFlowExtended(flowUrl: string, parameters: any, getData: boolean): Promise<InvokeFlowResult>;
-    saveFile(files: DownloadFile[]): Promise<void>;
+    downloadZipFile(files: DownloadFile[], progressCallback): Promise<void>;
 }

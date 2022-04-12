@@ -254,21 +254,32 @@ export default class SPDataService implements IDataService {
     }
 
     // https://stuk.github.io/jszip/
-    public async saveFile(files: DownloadFile[]): Promise<void> {
+    // funziona solo sul sito corrente
+    public async downloadZipFile(files: DownloadFile[], progressCallback): Promise<void> {
         var zip = new JSZip();
-        var img = zip.folder("FILES");
 
         for (let index = 0; index < files.length; index++) {
             const element = files[index];
-            const file = sp.web.getFileByUrl(element.download);
-            let content: Blob = await file.getBlob();
-            img.file(element.filename, content);
+            try {                
+                console.log(LOG_SOURCE + " - saveFile() - file: ", element);
+                progressCallback(files, index, "", false);
+                const file = sp.web.getFileByServerRelativePath(element.serverRelativeUrl);
+                let content: ArrayBuffer = await file.getBuffer();
+                console.log(LOG_SOURCE + " - saveFile() - blob: ", content);
+                zip.file(element.filename, content);                
+            } catch (reason) {
+                console.log(LOG_SOURCE + " - saveFile() - error: ", reason);
+                progressCallback(files, index, reason, false);
+            }
         }
 
+        console.log(LOG_SOURCE + " - saveFile() - zip: ", zip);
         zip.generateAsync({ type: "blob" })
-            .then(function (content) {
+            .then((content) => {
+                console.log(LOG_SOURCE + " - saveFile() - save zip");
                 // see FileSaver.js
                 saveAs(content, "dowbload.zip");
+                progressCallback(files, files.length, "Finished", true);
             });
     }
 
