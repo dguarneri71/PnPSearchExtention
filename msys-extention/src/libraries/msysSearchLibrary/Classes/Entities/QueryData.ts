@@ -11,10 +11,11 @@ export default class QueryData {
     public filtersConfiguration: IDataFilterConfiguration[];
     public filterOperator: string;
     public verticalValue: string;
+    public itemsCountPerPage: number;
 
     constructor(queryText: string, enableQueryRules: boolean, queryTemplate: string, resultSourceId: string,
         selectedProperties: string[], filtersConfiguration: IDataFilterConfiguration[],
-        selectedFilters: IDataFilter[], refinementFilters: string, filterOperator: string, verticalValue: string) {
+        selectedFilters: IDataFilter[], refinementFilters: string, filterOperator: string, verticalValue: string, itemsCountPerPage: number) {
         this.enableQueryRules = enableQueryRules;
         this.queryTemplate = queryTemplate;
         this.queryText = queryText;
@@ -25,5 +26,6 @@ export default class QueryData {
         this.filtersConfiguration = filtersConfiguration;
         this.filterOperator = filterOperator;
         this.verticalValue = verticalValue;
+        this.itemsCountPerPage = itemsCountPerPage;
     }
 }

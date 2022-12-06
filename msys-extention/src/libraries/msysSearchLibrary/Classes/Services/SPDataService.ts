@@ -38,17 +38,22 @@ export default class SPDataService implements IDataService {
      * @param count 
      * @returns 
      */
-    public async getSearchResult(query: QueryData, count: number, moment: any): Promise<ISearchResult[]> {
-        console.log(LOG_SOURCE + " - getSearchResult(): ", query, count);
+    public async getSearchResult(query: QueryData, totalItemsCount: number, moment: any, progressCallback: (percentComplete: number, partial: number, total: number) => void): Promise<ISearchResult[]> {
+        console.log(LOG_SOURCE + " - getSearchResult() - query: ", query);
+        console.log(LOG_SOURCE + " - getSearchResult() - total row count: ", totalItemsCount);
+        const itemPerPage = query.itemsCountPerPage;
+        console.log(LOG_SOURCE + " - getSearchResult() - items per page: ", itemPerPage);
+        const totalPageNum = Math.ceil(totalItemsCount / itemPerPage);
+        console.log(LOG_SOURCE + " - getSearchResult() - num of page: ", totalPageNum);
 
         let searchQuery: ISearchQuery = {};
         searchQuery.Querytext = query.queryText;
-        searchQuery.RowLimit = count;
+        searchQuery.RowLimit = itemPerPage;
         searchQuery.SelectProperties = query.SelectProperties;
         searchQuery.EnableQueryRules = query.enableQueryRules;
         searchQuery.SourceId = query.resultSourceId;
         searchQuery.QueryTemplate = query.queryTemplate.replace("{verticals.value}", query.verticalValue);
-        searchQuery.TrimDuplicates = false;
+        searchQuery.TrimDuplicates = true;
 
         let refinementFilters: string[] = !isEmpty(query.refinementFilters) ? [query.refinementFilters] : [];
 
@@ -124,14 +129,29 @@ export default class SPDataService implements IDataService {
 
         console.log(LOG_SOURCE + " - getSearchResult() - searchQuery: ", searchQuery);
 
+        let results: ISearchResult[] = [];
         const searchResults: SearchResults = await sp.search(searchQuery);
+        results = searchResults.PrimarySearchResults;
+        let partialRowCount: number = searchResults.RowCount;
+        progressCallback(partialRowCount / totalItemsCount, partialRowCount, totalItemsCount);
 
-        console.log(LOG_SOURCE + " - getSearchResult() - ElapsedTime: ", searchResults.ElapsedTime);
-        console.log(LOG_SOURCE + " - getSearchResult() - RowCount: ", searchResults.RowCount);
-        console.log(LOG_SOURCE + " - getSearchResult() - PrimarySearchResults: ", searchResults.PrimarySearchResults);
+        //console.log(LOG_SOURCE + " - getSearchResult() - PrimarySearchResults: ", searchResults.PrimarySearchResults);
+        //console.log(LOG_SOURCE + " - getSearchResult() - PrimarySearchResults: ", searchResults.PrimarySearchResults);
+        //console.log(LOG_SOURCE + " - getSearchResult() - ElapsedTime: ", searchResults.ElapsedTime);
+        //console.log(LOG_SOURCE + " - getSearchResult() - RowCount: ", searchResults.RowCount);
+
+        if (totalPageNum > 1) {
+            for (let index = 2; index <= totalPageNum; index++) {
+                let element: SearchResults = await searchResults.getPage(index);
+                results = results.concat(element.PrimarySearchResults);
+                partialRowCount = partialRowCount + element.RowCount;
+                progressCallback(partialRowCount / totalItemsCount, partialRowCount, totalItemsCount);
+            }
+        }
 
         return new Promise<ISearchResult[]>(res => {
-            res(searchResults.PrimarySearchResults);
+            //res(searchResults.PrimarySearchResults);
+            res(results);
         });
     }
 
@@ -255,18 +275,18 @@ export default class SPDataService implements IDataService {
 
     // https://stuk.github.io/jszip/
     // funziona solo sul sito corrente
-    public async downloadZipFile(files: DownloadFile[], progressCallback): Promise<void> {
+    public async downloadZipFile(files: DownloadFile[], progressCallback: any): Promise<void> {
         var zip = new JSZip();
 
         for (let index = 0; index < files.length; index++) {
             const element = files[index];
-            try {                
+            try {
                 console.log(LOG_SOURCE + " - saveFile() - file: ", element);
                 progressCallback(files, index, "", false);
                 const file = sp.web.getFileByServerRelativePath(element.serverRelativeUrl);
                 let content: ArrayBuffer = await file.getBuffer();
                 console.log(LOG_SOURCE + " - saveFile() - blob: ", content);
-                zip.file(element.filename, content);                
+                zip.file(element.filename, content);
             } catch (reason) {
                 console.log(LOG_SOURCE + " - saveFile() - error: ", reason);
                 progressCallback(files, index, reason, false);

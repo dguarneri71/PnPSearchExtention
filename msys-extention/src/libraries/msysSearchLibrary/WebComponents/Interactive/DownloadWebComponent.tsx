@@ -128,6 +128,7 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
         let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
         let filterOperator: string = this.props.content["filters"]["filterOperator"];
         let refinementFilters: string = dataSourceProperties["refinementFilters"];
+        let itemsCountPerPage: number = this.props.content["properties"]["paging"]["itemsCountPerPage"];
         let useVertical: boolean = this.props.content["properties"]["useVerticals"];
         console.log(LOG_SOURCE + " - useVertical: ", useVertical);
 
@@ -137,10 +138,10 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
         }
 
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path", "SPSiteUrl"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue);
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path", "SPSiteUrl"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue, itemsCountPerPage);
         console.log(LOG_SOURCE + " - Query: ", query);
 
-        this.dataService.getSearchResult(query, count, this.moment).then(results => {
+        this.dataService.getSearchResult(query, count, this.moment, this.voidSearchCallback.bind(this)).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
             for (let index = 0; index < results.length; index++) {
                 const element = results[index];
@@ -159,6 +160,12 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
                 this.download_files_zip(downloadFiles);
             }
         });
+    }
+
+    private voidSearchCallback(percentComplete: number, partial: number, total: number) {
+        console.log(LOG_SOURCE + " - progressCallback() - Percentuale: ", percentComplete);
+        console.log(LOG_SOURCE + " - progressCallback() - Totale parziale: ", partial);
+        console.log(LOG_SOURCE + " - progressCallback() - Totale: ", total);
     }
 
     private download_files_zip(files: DownloadFile[]): void {

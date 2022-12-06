@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BaseWebComponent, IDataFilter, IDataFilterConfiguration } from '@pnp/modern-search-extensibility';
-import { IconButton, IIconProps, initializeIcons, CommandBarButton, Spinner, DefaultButton, PrimaryButton, Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react';
+import { IconButton, IIconProps, initializeIcons, CommandBarButton, Spinner, DefaultButton, PrimaryButton, Dialog, DialogFooter, DialogType, ProgressIndicator } from 'office-ui-fabric-react';
 import { HttpClient } from '@microsoft/sp-http';
 import { PageContext } from '@microsoft/sp-page-context';
 import { IDataService } from '../../Classes/Services/IDataService';
@@ -10,7 +10,6 @@ import QueryData from '../../Classes/Entities/QueryData';
 import { FieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-controls-react/lib/FieldCollectionData';
 import { Helper } from '../../Helpers/Helper';
 import { FieldCollectionDataValue } from '../../Classes/Entities/FieldCollectionDataValue';
-//import { PnPClientStorage } from "@pnp/core";
 import { stringIsNullOrEmpty } from "@pnp/common";
 import { DateHelper } from '../../Helpers/DateHelper';
 
@@ -31,6 +30,9 @@ export interface IExcelComponentState {
     headerLabels: any[];
     errorMsg: string;
     showSpinner: boolean;
+    percentComplete: number;
+    totalResultsCount: number;
+    partialResultsCount: number;
 }
 
 // Initialize icons in case this example uses them
@@ -48,7 +50,6 @@ const STORAGE_KEY: string = "ExcelHeaders";
 //TODO: aggiungere salvataggio in cookie delle headerLabels
 export class ExcelComponent extends React.Component<IExcelComponentProps, IExcelComponentState> {
     private dataService: IDataService;
-    //private storage: PnPClientStorage;
     private moment: any;
 
     constructor(props: IExcelComponentProps) {
@@ -56,10 +57,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         console.log(LOG_SOURCE + " - props: ", this.props);
         this.dataService = new SPDataService(this.props.context, this.props.httpClient);
         let _values: any[] = [];
-
-        //this.storage = new PnPClientStorage();
-        //_values = this.storage.local.get(STORAGE_KEY);
-        //console.log(LOG_SOURCE + " - Storage HeaderLabels: ", _values);
 
         if (_values == null) {
             let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
@@ -70,8 +67,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 valueData.DisplayName = value;
                 return valueData;
             });
-
-            //this.storage.local.put(STORAGE_KEY, _values);
         }
 
         console.log(LOG_SOURCE + " - HeaderLabels: ", _values);
@@ -82,7 +77,10 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
             showPanel: false,
             headerLabels: _values,
             errorMsg: null,
-            showSpinner: false
+            showSpinner: false,
+            percentComplete: 0,
+            totalResultsCount: 0,
+            partialResultsCount: 0
         };
     }
 
@@ -94,7 +92,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 const items: FieldCollectionDataValue[] = await this.dataService.getLabels(this.props.labelsListTitle);
                 console.log(LOG_SOURCE + " - componentWillMount() - HeaderLabels: ", items);
                 if (items.length > 0) {
-                    //this.storage.local.put(STORAGE_KEY, items);
                     this.setState({
                         headerLabels: items
                     });
@@ -123,10 +120,13 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
 
     public render() {
         console.log(LOG_SOURCE + " - render() - state: ", this.state);
+        const { percentComplete, partialResultsCount, totalResultsCount } = this.state;
         let label: string = this.props.label ? this.props.label : LABEL;
         if (this.props.icon) {
             icon.iconName = this.props.icon;
         }
+
+        let countMsg = partialResultsCount + " / " + totalResultsCount;
 
         return <>
             {
@@ -168,7 +168,11 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 />
                 }
 
+            {/*
                 {this.state.showSpinner && <Spinner label="Waiting..." />}
+            */}                
+
+                {this.state.showSpinner && <ProgressIndicator label="Waiting..." description={countMsg} percentComplete={percentComplete} />}
 
                 {!stringIsNullOrEmpty(this.state.errorMsg) && <div style={{ color: "red", fontSize: "12px", paddingTop: "10px" }}>{this.state.errorMsg}</div>}
 
@@ -205,7 +209,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         if (this.props.content["inputQueryText"]) {
             queryText = this.props.content["inputQueryText"];
         }
-        let count: number = this.props.content["data"]["totalItemsCount"];
+        let totalItemsCount: number = this.props.content["data"]["totalItemsCount"];
         let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
         let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
         let queryTemplate: string = dataSourceProperties["queryTemplate"];
@@ -230,17 +234,20 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         let formats = Helper.getValuesForArray(this.state.headerLabels, HEARDER_FORMAT);
         console.log(LOG_SOURCE + " - formats: ", formats);
 
+        let itemsCountPerPage: number = this.props.content["properties"]["paging"]["itemsCountPerPage"];
+        console.log(LOG_SOURCE + " - itemsCountPerPage: ", itemsCountPerPage);
+
         let verticalValue: string = null;
         if (useVertical) {
             verticalValue = this.props.content["verticals"]["selectedVertical"]["value"];
             console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
         }
 
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue);
+        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue, itemsCountPerPage);
 
         console.log(LOG_SOURCE + " - Query: ", query);
 
-        this.dataService.getSearchResult(query, count, this.moment).then(results => {
+        this.dataService.getSearchResult(query, totalItemsCount, this.moment, this.progressCallback.bind(this)).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
             Helper.downloadExcel(results, selectedProperties, headers, types, formats);
 
@@ -248,6 +255,17 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 showPanel: false,
                 showSpinner: false
             });
+        });
+    }
+
+    private progressCallback(percentComplete: number, partial: number, total: number) {
+        console.log(LOG_SOURCE + " - progressCallback() - Percentuale: ", percentComplete);
+        console.log(LOG_SOURCE + " - progressCallback() - Totale parziale: ", partial);
+        console.log(LOG_SOURCE + " - progressCallback() - Totale: ", total);
+        this.setState({
+            percentComplete: percentComplete,
+            partialResultsCount: partial,
+            totalResultsCount: total
         });
     }
 }
