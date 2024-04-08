@@ -114,34 +114,12 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
 
     private __download(event): void {
         let downloadFiles: DownloadFile[] = [];
-        let queryText: string = "*";
-        if (this.props.content["inputQueryText"]) {
-            queryText = this.props.content["inputQueryText"];
-        }
-        let count: number = this.props.content["data"]["totalItemsCount"];
         let webUrl: string = this.props.content["context"]["web"]["absoluteUrl"];
-        let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
-        let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
-        let queryTemplate: string = dataSourceProperties["queryTemplate"];
-        let resultSourceId: string = dataSourceProperties["resultSourceId"];
-        let selectedFilters: IDataFilter[] = this.props.content["filters"]["selectedFilters"] as IDataFilter[];
-        let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
-        let filterOperator: string = this.props.content["filters"]["filterOperator"];
-        let refinementFilters: string = dataSourceProperties["refinementFilters"];
-        let itemsCountPerPage: number = this.props.content["properties"]["paging"]["itemsCountPerPage"];
-        let useVertical: boolean = this.props.content["properties"]["useVerticals"];
-        console.log(LOG_SOURCE + " - useVertical: ", useVertical);
+        let query: QueryData = new QueryData(this.props, ["Filename", "FileType", "FileExtension", "Path", "SPSiteUrl"]);
 
-        let verticalValue: string = null;
-        if (useVertical) {
-            verticalValue = this.props.content["verticals"]["selectedVertical"]["value"];
-            console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
-        }
-
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, ["Filename", "FileType", "FileExtension", "Path", "SPSiteUrl"], filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue, itemsCountPerPage);
         console.log(LOG_SOURCE + " - Query: ", query);
-
-        this.dataService.getSearchResult(query, count, this.moment, this.voidSearchCallback.bind(this)).then(results => {
+        
+        this.dataService.getSearchResult(query, this.moment, this.voidSearchCallback.bind(this)).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
             for (let index = 0; index < results.length; index++) {
                 const element = results[index];
@@ -152,7 +130,6 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             }
             console.log(LOG_SOURCE + " - DownloadFiles: ", downloadFiles);
             if (downloadFiles.length > 0) {
-                //this.download_files(downloadFiles);
                 this.setState({
                     showPanel: true,
                     showSpinner: false
@@ -179,7 +156,7 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
                 showSpinner: false
             });
         } else {
-            var perc = ((index+1)/files.length) + INTERVAL_INCREMENT;
+            var perc = ((index + 1) / files.length) + INTERVAL_INCREMENT;
             this.setState({
                 percentComplete: perc,
                 filename: files[index].filename,
@@ -187,37 +164,6 @@ export class DownloadComponent extends React.Component<IDownloadComponentProps, 
             });
         }
     }
-
-    /* private download_files(files: DownloadFile[]): void {
-        function download_next(i: number) {
-            if (i >= files.length) {
-                return;
-            }
-            var a = document.createElement('a');
-            a.href = files[i].webUrl + "/_layouts/download.aspx?SourceURL=" + encodeURI(files[i].download);
-            console.log(LOG_SOURCE + " - download_next() - count: " + i + " - url", a.href);
-            a.target = '_blank';
-            a.setAttribute("data-interception", "off");
-            // Use a.download if available, it prevents plugins from opening.
-            if ('download' in a) {
-                a.download = files[i].filename;
-            }
-            // Add a to the doc for click to work.
-            (document.body || document.documentElement).appendChild(a);
-            if (a.click) {
-                a.click(); // The click method is supported by most browsers.
-            }
-            // Delete the temporary link.
-            a.parentNode.removeChild(a);
-            // Download the next file with a small timeout. The timeout is necessary
-            // for IE, which will otherwise only download the first file.
-            setTimeout(() => {
-                download_next(i + 1);
-            }, 500);
-        }
-        // Initiate the first download.
-        download_next(0);
-    } */
 }
 
 //<msys-download-all data-label="Download All" data-content="{{JSONstringify this 2}}" data-icon="Download"></msys-download-all>

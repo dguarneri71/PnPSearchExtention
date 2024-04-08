@@ -58,7 +58,7 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         this.dataService = new SPDataService(this.props.context, this.props.httpClient);
         let _values: any[] = [];
 
-        if (_values == null) {
+        if (_values.length == 0) {
             let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
             let properties: string[] = dataSourceProperties["selectedProperties"];
             _values = properties.map((value, index, array) => {
@@ -168,10 +168,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
                 />
                 }
 
-            {/*
-                {this.state.showSpinner && <Spinner label="Waiting..." />}
-            */}                
-
                 {this.state.showSpinner && <ProgressIndicator label="Waiting..." description={countMsg} percentComplete={percentComplete} />}
 
                 {!stringIsNullOrEmpty(this.state.errorMsg) && <div style={{ color: "red", fontSize: "12px", paddingTop: "10px" }}>{this.state.errorMsg}</div>}
@@ -194,7 +190,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
 
     private _onChangeFieldCollectionData(values: any[]): void {
         console.log(LOG_SOURCE + " - FieldCollectionData: ", values);
-        //this.storage.local.put(STORAGE_KEY, values);
         this.setState({
             headerLabels: values
         });
@@ -205,26 +200,6 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
             showSpinner: true
         });
 
-        let queryText: string = "*";
-        if (this.props.content["inputQueryText"]) {
-            queryText = this.props.content["inputQueryText"];
-        }
-        let totalItemsCount: number = this.props.content["data"]["totalItemsCount"];
-        let dataSourceProperties = this.props.content["properties"]["dataSourceProperties"];
-        let enableQueryRules: boolean = dataSourceProperties["enableQueryRules"];
-        let queryTemplate: string = dataSourceProperties["queryTemplate"];
-        let resultSourceId: string = dataSourceProperties["resultSourceId"];
-        let useVertical: boolean = this.props.content["properties"]["useVerticals"];
-        console.log(LOG_SOURCE + " - useVertical: ", useVertical);
-        let selectedFilters: IDataFilter[] = this.props.content["filters"]["selectedFilters"] as IDataFilter[];
-        console.log(LOG_SOURCE + " - selectedFilters: ", selectedFilters);
-        let filtersConfiguration: IDataFilterConfiguration[] = this.props.content["filters"]["filtersConfiguration"] as IDataFilterConfiguration[];
-        console.log(LOG_SOURCE + " - filtersConfiguration: ", filtersConfiguration);
-        let filterOperator: string = this.props.content["filters"]["filterOperator"];
-        console.log(LOG_SOURCE + " - filterOperator: ", filterOperator);
-        let refinementFilters: string = dataSourceProperties["refinementFilters"];
-        console.log(LOG_SOURCE + " - refinementFilters: ", refinementFilters);
-
         let selectedProperties = Helper.getValuesForArray(this.state.headerLabels, HEARDER_TITLE);
         console.log(LOG_SOURCE + " - selectedProperties: ", selectedProperties);
         let headers = Helper.getValuesForArray(this.state.headerLabels, HEARDER_DISPLAY_NAME);
@@ -234,26 +209,22 @@ export class ExcelComponent extends React.Component<IExcelComponentProps, IExcel
         let formats = Helper.getValuesForArray(this.state.headerLabels, HEARDER_FORMAT);
         console.log(LOG_SOURCE + " - formats: ", formats);
 
-        let itemsCountPerPage: number = this.props.content["properties"]["paging"]["itemsCountPerPage"];
-        console.log(LOG_SOURCE + " - itemsCountPerPage: ", itemsCountPerPage);
-
-        let verticalValue: string = null;
-        if (useVertical) {
-            verticalValue = this.props.content["verticals"]["selectedVertical"]["value"];
-            console.log(LOG_SOURCE + " - verticalValue: ", verticalValue);
-        }
-
-        let query: QueryData = new QueryData(queryText, enableQueryRules, queryTemplate, resultSourceId, selectedProperties, filtersConfiguration, selectedFilters, refinementFilters, filterOperator, verticalValue, itemsCountPerPage);
+        let query: QueryData = new QueryData(this.props, selectedProperties);
 
         console.log(LOG_SOURCE + " - Query: ", query);
 
-        this.dataService.getSearchResult(query, totalItemsCount, this.moment, this.progressCallback.bind(this)).then(results => {
+        this.dataService.getSearchResult(query, this.moment, this.progressCallback.bind(this)).then(results => {
             console.log(LOG_SOURCE + " - Search results: ", results);
             Helper.downloadExcel(results, selectedProperties, headers, types, formats);
 
             this.setState({
                 showPanel: false,
                 showSpinner: false
+            });
+        }).catch(reason => {
+            this.setState({
+                showSpinner: false,
+                errorMsg: JSON.stringify(reason)
             });
         });
     }
