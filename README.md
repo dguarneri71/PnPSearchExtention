@@ -242,7 +242,8 @@ This component allows you to download all the files contained in the search resu
 
 ### Invoke Power Automate Flow
 
-Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i seguenti parametri.  
+Questo componente chiama un flow Power Automate di tipo HTTP Trigger con i seguenti parametri.  MANCA DESCRIZIONE LISTA SETTINGS
+
 This component calls a Power Automate flow of type HTTP Trigger with the following parameters.
 
 ```json
