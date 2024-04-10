@@ -3,7 +3,7 @@
   "solution": {
     "name": "DG - Extention Library Demo",
     "id": "fda464ac-72d6-4ad9-8ed4-88b2f99867e4",
-    "version": "1.0.1.1",
+    "version": "1.0.1.2",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

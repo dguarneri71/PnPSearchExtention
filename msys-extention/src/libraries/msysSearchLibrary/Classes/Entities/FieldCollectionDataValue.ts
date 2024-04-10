@@ -3,4 +3,5 @@ export class FieldCollectionDataValue {
     public DisplayName: string;
     public Type: string;
     public Format: string;
+    public Order: number;
 }
