@@ -6,7 +6,7 @@ import { stringIsNullOrEmpty } from "@pnp/common";
 // import { Guid } from '@microsoft/sp-core-library';
 import "@pnp/sp/search";
 import { ISearchQuery, SearchResults, ISearchResult } from "@pnp/sp/search";
-import { IList, sp, Web } from "@pnp/sp/presets/all";
+import { IList, IViewInfo, sp, Web } from "@pnp/sp/presets/all";
 import { PageContext } from '@microsoft/sp-page-context';
 import QueryData from '../Entities/QueryData';
 import InvokeFlowResult from "../Entities/InvokeFlowResult";
@@ -273,9 +273,37 @@ export default class SPDataService implements IDataService {
     public getLabels(listTitle: string): Promise<FieldCollectionDataValue[]> {
         console.log(LOG_SOURCE + " - getLabels() - listTitle: ", listTitle);
         let results: FieldCollectionDataValue[] = [];
-        return new Promise<FieldCollectionDataValue[]>((res, reject) => {
+        return new Promise<FieldCollectionDataValue[]>(async (res, reject) => {
             let labelsList: IList = sp.web.lists.getByTitle(listTitle);
-            labelsList.items.select("ID", "Title", "Label", "ColumnType", "Format", "Order0").orderBy("Order0").get().then(items => {
+
+            const view: IViewInfo = await labelsList.defaultView();
+            console.log(LOG_SOURCE + " - getLabels() - default view: ", view);
+            console.log(LOG_SOURCE + " - getLabels() - default view query: ", view.ViewQuery);
+
+            const xml = '<View><Query>' + view.ViewQuery + '</Query></View>';
+
+            //Recupero gli item in base alla query della vista di default
+            labelsList.getItemsByCAMLQuery({'ViewXml' : xml}).then(items => {
+                console.log(LOG_SOURCE + " - getLabels() - items: ", items);
+                for (let index = 0; index < items.length; index++) {
+                    const element = items[index];
+                    let result: FieldCollectionDataValue = new FieldCollectionDataValue();
+                    result.Title = element.Title;
+                    result.DisplayName = element["Label"];
+                    result.Type = element["ColumnType"];
+                    result.Format = element["Format"];
+                    //result.Order = element["Order0"];
+                    results.push(result);
+                }
+                console.log(LOG_SOURCE + " - getLabels() - labels: ", results);
+                res(results);
+            }).catch(reason => {
+                Object.keys(reason).forEach(prop => console.log(LOG_SOURCE + " - prop: ", prop, reason[prop]));
+                reject(reason);
+            });
+
+            //Vecchio metodo
+            /* labelsList.items.select("ID", "Title", "Label", "ColumnType", "Format", "Order0").orderBy("Order0").get().then(items => {
                 console.log(LOG_SOURCE + " - getLabels() - items: ", items);
                 for (let index = 0; index < items.length; index++) {
                     const element = items[index];
@@ -292,7 +320,7 @@ export default class SPDataService implements IDataService {
             }).catch(reason => {
                 Object.keys(reason).forEach(prop => console.log(LOG_SOURCE + " - prop: ", prop, reason[prop]));
                 reject(reason);
-            });
+            }); */
         });
     }
 
